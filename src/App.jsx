@@ -96,7 +96,7 @@ function App() {
       </div>
       <div className="app-container">
       <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-        <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '180px', marginBottom: '8px' }} />
+        <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '180px', marginBottom: '16px' }} />
         <h1>Predictions<br/>Bracket</h1>
         
         {!isSharedView && (
