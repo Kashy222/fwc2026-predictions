@@ -97,7 +97,7 @@ function App() {
         <div style={{ marginTop: '32px', background: 'white', padding: '16px', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
            <QRCode value="https://fwc2026-predictions.vercel.app/" size={160} />
         </div>
-        <p style={{ marginTop: '16px', fontWeight: '600', fontSize: '18px' }}>Scan this to open</p>
+        <p style={{ marginTop: '16px', fontWeight: '600', fontSize: '18px', textAlign: 'center' }}>Scan this to open on tablet or desktop</p>
       </div>
       <div className="app-container">
       <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
