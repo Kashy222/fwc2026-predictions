@@ -97,7 +97,7 @@ function App() {
       <div className="app-container">
       <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '120px', marginBottom: '8px' }} />
-        <h1>FIFA WC 2026<br/>Predictions</h1>
+        <h1>FIFA WC 2026<br/>Predictions Bracket</h1>
         
         {!isSharedView && (
             <div className="last-updated-row" style={{ alignItems: 'flex-start', flexDirection: 'column', gap: '4px' }}>
