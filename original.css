@@ -1,0 +1,675 @@
+*,
+:before,
+:after {
+  box-sizing: border-box;
+}
+:root {
+  --lightningcss-light: initial;
+  --lightningcss-dark: ;
+  color-scheme: light;
+  --bg: #ece8e2;
+  --bg-flag: #ece8e2;
+  --text: #111;
+  --text-secondary: #444;
+  --text-muted: #666;
+  --text-subtle: #555;
+  --border: #ccc;
+  --border-strong: #aaa;
+  --border-subtle: #ddd;
+  --surface: #f5f5f5;
+  --surface-elevated: #fff;
+  --surface-muted: #ffffff73;
+  --btn-bg: #222;
+  --btn-bg-hover: #333;
+  --btn-text: #fff;
+  --btn-disabled-bg: #bbb;
+  --btn-disabled-text: #fff;
+  --modal-overlay: #00000059;
+  --modal-shadow: 0 12px 40px #00000026;
+  --focus-outline: #888;
+  --error: #b00020;
+  --success: #2e7d32;
+  --connector-color: #c8c8c8;
+  --dot-color: #111;
+  --tooltip-bg: #111111eb;
+  --tooltip-text: #fff;
+  --trophy-blend-mode: darken;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --lightningcss-light: ;
+    --lightningcss-dark: initial;
+    color-scheme: dark;
+    --bg: #121316;
+    --bg-flag: #121316;
+    --text: #ede8e4;
+    --text-secondary: #b8aea8;
+    --text-muted: #8f8480;
+    --text-subtle: #9a908b;
+    --border: #3d3835;
+    --border-strong: #524c48;
+    --border-subtle: #35302d;
+    --surface: #1f1c1a;
+    --surface-elevated: #2a2623;
+    --surface-muted: #ffffff0a;
+    --btn-bg: #ede8e4;
+    --btn-bg-hover: #fff;
+    --btn-text: #161412;
+    --btn-disabled-bg: #4a4540;
+    --btn-disabled-text: #8f8480;
+    --modal-overlay: #0000008c;
+    --modal-shadow: 0 12px 40px #00000073;
+    --focus-outline: #8f8480;
+    --error: #ff6b6b;
+    --success: #6fcf97;
+    --connector-color: #4b4d50;
+    --dot-color: #73767a;
+    --tooltip-bg: #ede8e4f2;
+    --tooltip-text: #161412;
+    --trophy-blend-mode: normal;
+  }
+}
+html {
+  min-width: 770px;
+}
+body {
+  min-height: 100svh;
+  color: var(--text);
+  background-color: var(--bg);
+  margin: 0;
+}
+a {
+  color: inherit;
+}
+.circle-points {
+  --flag-size: 52px;
+  color: var(--dot-color);
+  aspect-ratio: 1;
+  width: min(100% - 64px, min(100vh - 160px, 1000px));
+  margin: 0 auto;
+  position: relative;
+}
+.circle-points__connector {
+  z-index: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.circle-points__connector line,
+.circle-points__connector path {
+  stroke: var(--connector-color);
+  stroke-width: 0.15px;
+  fill: none;
+}
+.circle-points__trophy {
+  z-index: 4;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.circle-points__trophy img {
+  width: 40px;
+  height: auto;
+  mix-blend-mode: var(--trophy-blend-mode);
+  display: block;
+}
+.circle-points__ring {
+  z-index: 1;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+.circle-points__ring--first {
+  z-index: 3;
+}
+.circle-points__ring--second {
+  z-index: 2;
+}
+.circle-points__ring--playable {
+  z-index: 4;
+}
+.circle-points__ring--playable-inner {
+  z-index: 5;
+}
+.circle-points__ring--playable-final {
+  z-index: 6;
+}
+.circle-points__ring--playable-championship {
+  z-index: 7;
+}
+.circle-points__path-measure {
+  pointer-events: none;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+  position: absolute;
+  overflow: hidden;
+}
+.circle-points__pending-target-layer {
+  z-index: 1;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+.circle-points__pending-target-layer .circle-points__point--pending-target {
+  z-index: 0;
+  pointer-events: none;
+}
+.circle-points__traveling-layer {
+  z-index: 10;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+.circle-points__traveling-flag {
+  width: var(--flag-size);
+  height: var(--flag-size);
+  z-index: 11;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.circle-points__point {
+  pointer-events: auto;
+  background: currentColor;
+  border-radius: 50%;
+  width: 6px;
+  height: 6px;
+  transition: background-color 0.4s;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.circle-points__point--team {
+  width: var(--flag-size);
+  height: var(--flag-size);
+  background: var(--bg-flag);
+  z-index: 1;
+  border: none;
+  border-radius: 50%;
+  display: block;
+  overflow: visible;
+}
+.circle-points__point--first-slot {
+  width: var(--flag-size);
+  height: var(--flag-size);
+  z-index: 9;
+  background: 0 0;
+  overflow: visible;
+}
+.circle-points__dot-marker {
+  pointer-events: none;
+  z-index: 0;
+  background: currentColor;
+  border-radius: 50%;
+  width: 6px;
+  height: 6px;
+  transition:
+    background-color 0.4s,
+    opacity 0.4s;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.circle-points__ring--first .circle-points__flag-tooltip,
+.circle-points__flag-button {
+  z-index: 1;
+  width: var(--flag-size);
+  height: var(--flag-size);
+  mix-blend-mode: normal;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.circle-points__ring--first
+  .circle-points__flag-tooltip
+  .circle-points__flag-stack
+  .circle-points__flag {
+  position: absolute;
+  transform: none;
+}
+:is(
+    .circle-points__point--first-slot:has(.circle-points__flag-tooltip:hover),
+    .circle-points__point--first-slot:has(.circle-points__flag-button:hover),
+    .circle-points__point--first-slot:has(
+        .circle-points__flag-button:focus-visible
+      )
+  ),
+button.circle-points__point--team:hover,
+button.circle-points__point--team:focus-visible {
+  z-index: 20;
+}
+.circle-points__point--team:has(.circle-points__flag-tooltip:hover) {
+  z-index: 20;
+}
+.circle-points__flag-button {
+  width: var(--flag-size);
+  height: var(--flag-size);
+  background: var(--bg-flag);
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+.circle-points__flag-button:disabled,
+button.circle-points__point:disabled {
+  opacity: 1;
+  cursor: default;
+}
+button.circle-points__point {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+.circle-points__point--selectable {
+  cursor: pointer;
+}
+.circle-points__point--passed .circle-points__dot-marker,
+.circle-points__point--passed:not(.circle-points__point--first-slot):not(
+    .circle-points__point--team
+  ) {
+  background: var(--connector-color);
+}
+.circle-points__flag-stack {
+  width: var(--flag-size);
+  height: var(--flag-size);
+  display: block;
+  position: relative;
+}
+.circle-points__flag {
+  width: var(--flag-size);
+  height: var(--flag-size);
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+.circle-points__flag-stack .circle-points__flag {
+  transition: opacity 0.4s;
+  position: absolute;
+  inset: 0;
+}
+.circle-points__flag--active {
+  opacity: 1;
+}
+.circle-points__flag--inactive {
+  filter: sepia() saturate(0.7);
+  opacity: 0;
+}
+@media (prefers-color-scheme: dark) {
+  .circle-points__flag--inactive {
+    filter: saturate(0.33);
+  }
+}
+.circle-points__flag-stack--inactive .circle-points__flag--active {
+  opacity: 0;
+}
+.circle-points__flag-stack--inactive .circle-points__flag--inactive {
+  opacity: 0.4;
+}
+.circle-points__flag-tooltip {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+}
+.circle-points__tooltip {
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 50;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  transition:
+    opacity 0.15s,
+    visibility 0.15s;
+  position: fixed;
+}
+.circle-points__tooltip--visible {
+  opacity: 1;
+  visibility: visible;
+}
+.app {
+  min-height: 100svh;
+  display: flex;
+}
+.app-sidebar {
+  flex-direction: column;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  width: min(18rem, 32vw);
+  padding: 2rem 1.75rem;
+  display: flex;
+}
+.app-sidebar__title {
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 1.375rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+.app-sidebar__text {
+  color: var(--text-secondary);
+  margin: 0 0 0.5em;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.3;
+}
+.app-sidebar__footer {
+  color: var(--text-secondary);
+  margin: auto 0 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 13px;
+  line-height: 1.3;
+}
+.app-sidebar__actions {
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+}
+.app-sidebar__share-message {
+  color: var(--text-secondary);
+  margin: -0.75rem 0 1.25rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+.app-sidebar__share-message--error {
+  color: var(--error);
+}
+.app-action-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  cursor: pointer;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.4375rem 0.75rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1;
+}
+.app-action-btn:hover:not(:disabled) {
+  background: var(--btn-bg-hover);
+}
+.app-action-btn:disabled {
+  background: var(--btn-disabled-bg);
+  color: var(--btn-disabled-text);
+  cursor: not-allowed;
+}
+.app-share-modal {
+  z-index: 100;
+  background: var(--modal-overlay);
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  display: flex;
+  position: fixed;
+  inset: 0;
+}
+.app-share-modal__panel {
+  background: var(--surface-elevated);
+  width: min(100%, 40rem);
+  box-shadow: var(--modal-shadow);
+  border-radius: 0.5rem;
+  padding: 1.75rem 1.5rem;
+}
+.app-share-modal__title {
+  color: var(--text);
+  margin: 0 0 0.75rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.app-share-modal__link-block {
+  margin: 0 0 1.25rem;
+}
+.app-share-modal__link-row {
+  align-items: stretch;
+  gap: 0.5rem;
+  max-width: 100%;
+  display: flex;
+}
+.app-share-modal__link {
+  background: var(--surface);
+  min-width: 0;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  border-radius: 0.25rem;
+  flex: 1;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    Liberation Mono,
+    Courier New,
+    monospace;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  overflow-x: auto;
+}
+.app-share-modal__copy {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  width: 2.375rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  display: inline-flex;
+}
+.app-share-modal__copy:hover {
+  background: var(--surface);
+  border-color: var(--border);
+}
+.app-share-modal__copy-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+.app-share-modal__copied {
+  color: var(--success);
+  margin: 0.5rem 0 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 0.8125rem;
+}
+.app-share-modal__status,
+.app-share-modal__error {
+  margin: 0 0 1.25rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+.app-share-modal__error {
+  color: var(--error);
+}
+.app-sidebar__debug {
+  border: 1px dashed var(--border-strong);
+  background: var(--surface-muted);
+  border-radius: 0.375rem;
+  margin-top: 2rem;
+  padding: 0.875rem 1rem;
+}
+.app-sidebar__debug-title {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    Liberation Mono,
+    Courier New,
+    monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.app-sidebar__debug-help {
+  color: var(--text-subtle);
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+.app-sidebar__debug-input {
+  border: 1px solid var(--border);
+  background: var(--surface-elevated);
+  width: 100%;
+  min-height: 10rem;
+  color: var(--text);
+  resize: vertical;
+  border-radius: 0.25rem;
+  margin: 0 0 0.75rem;
+  padding: 0.625rem 0.75rem;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    Liberation Mono,
+    Courier New,
+    monospace;
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  display: block;
+}
+.app-sidebar__debug-input:focus {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 1px;
+}
+.app-sidebar__debug-actions {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  display: flex;
+}
+.app-sidebar__debug-actions button {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.625rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 0.8125rem;
+}
+.app-sidebar__debug-actions button:hover {
+  background: var(--border-subtle);
+}
+.app-sidebar__debug-message {
+  color: var(--text-secondary);
+  margin: 0.625rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+.app-main {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  padding: 2rem 1.5rem;
+  display: flex;
+}
+.app-main__loading {
+  color: var(--text-secondary);
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    sans-serif;
+  font-size: 0.9375rem;
+}
+@media (width<=1199px) {
+  .app {
+    flex-direction: column;
+  }
+  .app-sidebar {
+    width: 100%;
+    padding: 1.5rem 1.5rem 0;
+  }
+  .app-main {
+    padding: 1.5rem;
+  }
+}
