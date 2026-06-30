@@ -228,7 +228,7 @@ function App() {
                 <p style={{ margin: '0 0 24px 0', fontSize: '14px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.4' }}>Your bracket isn't complete yet. You can finish it automatically or share it as-is.</p>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', transition: 'background 150ms' }} onMouseEnter={e => e.target.style.background = 'rgba(255,255,255,0.15)'} onMouseLeave={e => e.target.style.background = 'rgba(255,255,255,0.1)'} onClick={generateShareLink}>Proceed Anyway</button>
-                  <button style={{ flex: 1, padding: '10px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', transition: 'background 150ms' }} onMouseEnter={e => e.target.style.background = '#2563eb'} onMouseLeave={e => e.target.style.background = '#3b82f6'} onClick={handleCompleteAndShare}>Complete with Auto-Prediction</button>
+                  <button style={{ flex: 1, padding: '10px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', transition: 'background 150ms' }} onMouseEnter={e => e.target.style.background = '#2563eb'} onMouseLeave={e => e.target.style.background = '#3b82f6'} onClick={handleCompleteAndShare}>Auto-Predict</button>
                 </div>
               </>
             )}
