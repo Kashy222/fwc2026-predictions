@@ -95,7 +95,8 @@ function App() {
         <p>For the best experience, please view this bracket on a desktop or tablet.</p>
       </div>
       <div className="app-container">
-      <div className="header-info">
+      <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <img src="/trophy.png" alt="FIFA World Cup Trophy" style={{ height: '120px', marginBottom: '8px' }} />
         <h1>FIFA WC 2026<br/>Predictions</h1>
         
         {!isSharedView && (
