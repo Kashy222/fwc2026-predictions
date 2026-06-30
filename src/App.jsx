@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, RotateCcw, Share2, Copy, X } from 'lucide-react';
 import './App.css';
 import CircularBracket from './components/CircularBracket';
+import QRCode from 'react-qr-code';
 
 let initialSharedUsername = '';
 let initialSharedWinners = null;
@@ -93,6 +94,10 @@ function App() {
       <div className="mobile-warning">
         <h2>Desktop & Tablet Only</h2>
         <p>Please open this link on a larger screen to explore the interactive bracket.</p>
+        <div style={{ marginTop: '32px', background: 'white', padding: '16px', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+           <QRCode value="https://fwc2026-predictions.vercel.app/" size={160} />
+        </div>
+        <p style={{ marginTop: '16px', fontWeight: '600', fontSize: '18px' }}>Scan this to open</p>
       </div>
       <div className="app-container">
       <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
