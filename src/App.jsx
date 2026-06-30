@@ -91,8 +91,8 @@ function App() {
   return (
     <>
       <div className="mobile-warning">
-        <h2>Screen too small</h2>
-        <p>For the best experience, please view this bracket on a desktop or tablet.</p>
+        <h2>Desktop & Tablet Only</h2>
+        <p>Please open this link on a larger screen to explore the interactive bracket.</p>
       </div>
       <div className="app-container">
       <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
