@@ -151,8 +151,9 @@ function App() {
                       {sharedUsername}'s Bracket
                   </div>
                   <button 
-                      className="reset-btn"
-                      style={{ padding: '8px 12px', width: '200px', borderRadius: '6px', fontSize: '13px', display: 'flex', justifyContent: 'center', boxSizing: 'border-box' }}
+                      style={{ padding: '8px 12px', width: '200px', height: '34px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', cursor: 'pointer', transition: 'background 150ms' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#2563eb'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#3b82f6'}
                       onClick={() => {
                           window.history.replaceState({}, document.title, window.location.pathname);
                           setIsSharedView(false);
@@ -198,7 +199,7 @@ function App() {
                           }}
                       />
                   </div>
-                  <button style={{ width: '200px', padding: '8px 12px', background: 'rgba(255, 255, 255, 0.15)', color: 'white', border: 'none', borderRadius: '6px', fontSize: '13px', display: 'flex', gap: '6px', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', cursor: 'pointer', transition: 'background 150ms ease-out', fontWeight: '500' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'} onClick={handleShareClick}>
+                  <button style={{ width: '200px', height: '34px', padding: '8px 12px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', fontSize: '13px', display: 'flex', gap: '6px', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', cursor: 'pointer', transition: 'background 150ms' }} onMouseEnter={e => e.currentTarget.style.background = '#2563eb'} onMouseLeave={e => e.currentTarget.style.background = '#3b82f6'} onClick={handleShareClick}>
                       <Share2 size={14} />
                       Share
                   </button>
