@@ -89,21 +89,28 @@ function App() {
   };
 
   return (
-    <div className="app-container">
+    <>
+      <div className="mobile-warning">
+        <h2>Screen too small</h2>
+        <p>For the best experience, please view this bracket on a desktop or tablet.</p>
+      </div>
+      <div className="app-container">
       <div className="header-info">
         <h1>FIFA WC 2026<br/>Predictions</h1>
         
-        <div className="last-updated-row" style={{ alignItems: 'flex-start', flexDirection: 'column', gap: '4px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                Last Updated:
-                {isFetching && <span className="fetching-dot"></span>}
-            </div>
-            {lastUpdatedMatch && (
-                <div>
-                    {lastUpdatedMatch.teamA} vs {lastUpdatedMatch.teamB} ({lastUpdatedMatch.date})
+        {!isSharedView && (
+            <div className="last-updated-row" style={{ alignItems: 'flex-start', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    Last Updated:
+                    {isFetching && <span className="fetching-dot"></span>}
                 </div>
-            )}
-        </div>
+                {lastUpdatedMatch && (
+                    <div>
+                        {lastUpdatedMatch.teamA} vs {lastUpdatedMatch.teamB} ({lastUpdatedMatch.date})
+                    </div>
+                )}
+            </div>
+        )}
 
         {!isSharedView && (
             <div className="predict-controls-wrapper">
@@ -139,12 +146,12 @@ function App() {
       <div className="share-controls-wrapper" style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end' }}>
           {isSharedView ? (
               <>
-                  <div className="shared-name-label" style={{ color: 'white', fontWeight: 600, fontSize: '15px', padding: '6px 0' }}>
+                  <div className="shared-name-label" style={{ color: 'white', fontWeight: 600, fontSize: '15px', padding: '6px 0', width: '200px', textAlign: 'center' }}>
                       {sharedUsername}'s Bracket
                   </div>
                   <button 
                       className="reset-btn"
-                      style={{ padding: '8px 12px', width: 'auto', borderRadius: '6px', fontSize: '13px' }}
+                      style={{ padding: '8px 12px', width: '200px', borderRadius: '6px', fontSize: '13px', display: 'flex', justifyContent: 'center', boxSizing: 'border-box' }}
                       onClick={() => {
                           window.history.replaceState({}, document.title, window.location.pathname);
                           setIsSharedView(false);
@@ -293,6 +300,7 @@ function App() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
