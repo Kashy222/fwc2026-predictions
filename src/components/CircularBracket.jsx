@@ -83,7 +83,7 @@ const TEAM_COLORS = {
   'be': ['#000000', '#FDDA24', '#EF3340'],
   'ba': ['#002395', '#FFFFFF', '#FECB00'],
   'br': ['#009c3b', '#ffdf00', '#002776', '#ffffff'],
-  'ca': ['#FF0000', '#FFFFFF'],
+  'ca': ['#FFFFFF', '#FF0000'],
   'cv': ['#003893', '#FFFFFF', '#CF2027', '#F7D116'],
   'co': ['#FCD116', '#003893', '#CE1126'],
   'hr': ['#FF0000', '#FFFFFF', '#0000FF'],
@@ -690,8 +690,8 @@ const CircularBracket = forwardRef((props, ref) => {
                  <stop offset="100%" stopColor="rgba(255, 140, 20, 0)" />
                </radialGradient>
              </defs>
-             <circle cx="320" cy="320" r="320" fill="url(#trophy-glow-outer)" />
-             <circle cx="320" cy="320" r="180" fill="url(#trophy-glow-inner)" />
+             <circle cx="320" cy="320" r="240" fill="url(#trophy-glow-outer)" />
+             <circle cx="320" cy="320" r="135" fill="url(#trophy-glow-inner)" />
            </svg>
            <img alt="Trophy" src="/trophy.png" style={{ height: '110px', position: 'relative', zIndex: 1 }} />
         </div>
