@@ -691,8 +691,8 @@ const CircularBracket = forwardRef((props, ref) => {
                   style={{ 
                     stroke: strokeColor !== 'rgba(255, 255, 255, 0.2)' ? strokeColor : 'transparent',
                     strokeWidth: 0.15,
-                    strokeDasharray: 1,
-                    strokeDashoffset: strokeColor !== 'rgba(255, 255, 255, 0.2)' ? 0 : 1,
+                    strokeDasharray: '1',
+                    strokeDashoffset: strokeColor !== 'rgba(255, 255, 255, 0.2)' ? '0' : '1',
                     transition: 'stroke-dashoffset 0.2s cubic-bezier(0.33, 1, 0.68, 1)',
                     visibility: link.hidden ? 'hidden' : 'visible'
                   }} 
