@@ -218,8 +218,16 @@ const CircularBracket = forwardRef((props, ref) => {
 
   const bracketContainerRef = useRef(null);
   const panzoomRef = useRef(null);
-  const [showPanzoomHint, setShowPanzoomHint] = useState(false);
+  const [showPanzoomHint, setShowPanzoomHint] = useState(true);
   const [panzoomState, setPanzoomState] = useState({ scale: 1, x: 0, y: 0 });
+
+  useEffect(() => {
+      let timer;
+      if (props.isMobilePanzoomActive && showPanzoomHint) {
+          timer = setTimeout(() => setShowPanzoomHint(false), 10000);
+      }
+      return () => clearTimeout(timer);
+  }, [props.isMobilePanzoomActive, showPanzoomHint]);
 
   useEffect(() => {
       if (props.isMobilePanzoomActive && bracketContainerRef.current) {
@@ -258,9 +266,6 @@ const CircularBracket = forwardRef((props, ref) => {
               panzoom.pan(0, 0, { animate: false });
           }, 0);
 
-          if (!localStorage.getItem('panzoom-hint-dismissed')) {
-              setShowPanzoomHint(true);
-          }
 
           return () => {
               parent.removeEventListener('wheel', panzoom.zoomWithWheel);
@@ -717,22 +722,13 @@ const CircularBracket = forwardRef((props, ref) => {
   }, []);
 
   return (
-    <div style={props.isMobilePanzoomActive ? { position: 'relative', width: '100vw', height: '100dvh', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' } : { position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div onTouchStart={() => setShowPanzoomHint(false)} onMouseDown={() => setShowPanzoomHint(false)} style={props.isMobilePanzoomActive ? { position: 'relative', width: '100vw', height: '100dvh', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' } : { position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       
-      {props.isMobilePanzoomActive && showPanzoomHint && (() => {
-          const currentMinScale = panzoomRef.current ? panzoomRef.current.getOptions().minScale : Math.min(window.innerWidth, window.innerHeight) / 1600;
-          const isZoomedIn = panzoomState.scale > currentMinScale + 0.02;
-          if (isZoomedIn && !localStorage.getItem('panzoom-hint-dismissed')) {
-              localStorage.setItem('panzoom-hint-dismissed', 'true');
-              setTimeout(() => setShowPanzoomHint(false), 0);
-          }
-          if (isZoomedIn) return null;
-          return (
-              <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, fontSize: '11px', color: 'rgba(255,255,255,0.9)', width: '300px', textAlign: 'center', pointerEvents: 'none', lineHeight: '1.5', textShadow: '0 2px 6px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9)' }}>
-                  Pinch-To-Zoom &amp; Drag to move to desired piece in the bracket. Use minimap for guidance. Use <Shrink size={10} style={{ display: 'inline-block', verticalAlign: 'middle', margin: '0 2px' }} /> to reset zoom.
-              </div>
-          );
-      })()}
+      {props.isMobilePanzoomActive && showPanzoomHint && (
+          <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, fontSize: '11px', color: 'rgba(255,255,255,0.9)', width: '300px', textAlign: 'center', pointerEvents: 'none', lineHeight: '1.5', textShadow: '0 2px 6px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9)' }}>
+              Pinch-To-Zoom &amp; Drag to move to desired piece in the bracket. Use minimap for guidance. Use <Shrink size={10} style={{ display: 'inline-block', verticalAlign: 'middle', margin: '0 2px' }} /> to reset zoom.
+          </div>
+      )}
       {props.isMobilePanzoomActive && (() => {
           const currentMinScale = panzoomRef.current ? panzoomRef.current.getOptions().minScale : Math.min(window.innerWidth, window.innerHeight) / 1600;
           const isZoomedIn = panzoomState.scale > currentMinScale + 0.02;
