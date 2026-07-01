@@ -108,7 +108,7 @@ function App() {
 
         {!isSharedView && (
             <div className="predict-controls-wrapper" style={{ width: '100%' }}>
-              <div className="predict-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <div className="predict-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <span className="predict-title" style={{ fontSize: '14px', fontWeight: 600 }}>
                   ✨ Auto-Predict
                 </span>
@@ -127,18 +127,6 @@ function App() {
                           {mode}
                       </button>
                   ))}
-              </div>
-              
-              <div className="last-updated-row" style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Last Updated:
-                      {isFetching && <span className="fetching-dot" style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%' }}></span>}
-                  </div>
-                  {lastUpdatedMatch && (
-                      <div style={{ marginTop: '2px' }}>
-                          {lastUpdatedMatch.teamA} vs {lastUpdatedMatch.teamB} ({lastUpdatedMatch.date})
-                      </div>
-                  )}
               </div>
             </div>
         )}
