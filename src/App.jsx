@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, RotateCcw, Share2, Copy, X } from 'lucide-react';
+import { Sparkles, RotateCcw, Share2, Copy, X, Menu, ChevronDown, ChevronUp } from 'lucide-react';
 import './App.css';
 import CircularBracket, { getTeamName } from './components/CircularBracket';
 import QRCode from 'react-qr-code';
@@ -178,6 +178,8 @@ function App() {
   const [modalState, setModalState] = useState({ type: null }); // 'incomplete', 'loading', 'share_url'
   const [showCredits, setShowCredits] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [isAutoPredictOpen, setIsAutoPredictOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
       localStorage.setItem('username', username);
@@ -219,7 +221,9 @@ function App() {
       generateShareLink();
   };
 
-  if (!showFullBracket) {
+  const isExperimentalMobile = !showFullBracket;
+
+  if (!showFullBracket && !isExperimentalMobile) {
       if (hasShareParam) {
           return <MobileSharedScreen />;
       }
@@ -229,45 +233,77 @@ function App() {
   return (
     <>
       <div className="app-container">
-      <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-        <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '140px', marginBottom: '12px' }} />
-        <h1 style={{ fontSize: '22px', fontWeight: 700, margin: 0, marginBottom: '20px', lineHeight: 1.2 }}>Predictions<br/>Bracket</h1>
+      <div className="header-info" style={{ 
+          display: 'flex', flexDirection: 'column', alignItems: 'flex-start', 
+          position: isExperimentalMobile ? 'fixed' : 'absolute', 
+          zIndex: isExperimentalMobile ? 50 : 10,
+          background: isExperimentalMobile ? 'rgba(18, 19, 22, 0.15)' : 'transparent',
+          backdropFilter: isExperimentalMobile ? 'blur(8px)' : 'none',
+          WebkitBackdropFilter: isExperimentalMobile ? 'blur(8px)' : 'none',
+          padding: isExperimentalMobile ? '12px' : '0',
+          borderRadius: isExperimentalMobile ? '12px' : '0',
+          top: isExperimentalMobile ? '12px' : '24px',
+          left: isExperimentalMobile ? '12px' : '24px',
+          border: isExperimentalMobile ? '1px solid rgba(255,255,255,0.05)' : 'none'
+      }}>
+        <a href="https://fwc2026-predictions.vercel.app/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}>
+          <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: isExperimentalMobile ? '60px' : '140px', marginBottom: isExperimentalMobile ? '6px' : '12px' }} />
+          <h1 style={{ fontSize: isExperimentalMobile ? '16px' : '22px', fontWeight: 700, margin: 0, marginBottom: isExperimentalMobile ? '10px' : '20px', lineHeight: 1.2 }}>Predictions<br/>Bracket</h1>
+        </a>
         
-        <hr style={{ width: '100%', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.2)', margin: 0, marginBottom: '24px' }} />
+        <hr style={{ width: '100%', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.2)', margin: 0, marginBottom: isExperimentalMobile ? '12px' : '24px' }} />
 
         {!isSharedView && (
             <div className="predict-controls-wrapper" style={{ width: '100%' }}>
-              <div style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '6px' }}>
+              <div style={{ fontSize: isExperimentalMobile ? '12px' : '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '0px', lineHeight: 1.3 }}>
                 Pick winners yourself,
               </div>
-              <div style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '6px' }}>
+              <div style={{ fontSize: isExperimentalMobile ? '12px' : '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '0px', lineHeight: 1.3 }}>
                 OR
               </div>
-              <div className="predict-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span className="predict-title" style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)' }}>
-                  ✨ Auto-Predict
-                </span>
-                <button onClick={handleReset} className="reset-btn" aria-label="Reset Bracket" style={{ padding: '4px' }}>
-                  <RotateCcw size={14} />
+              <div 
+                  className="predict-header" 
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', marginTop: '2px', cursor: isExperimentalMobile ? 'pointer' : 'default' }}
+                  onClick={() => isExperimentalMobile && setIsAutoPredictOpen(!isAutoPredictOpen)}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span className="predict-title" style={{ fontSize: isExperimentalMobile ? '12px' : '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)' }}>
+                      ✨ Auto-Predict
+                    </span>
+                    {isExperimentalMobile && (
+                        isAutoPredictOpen ? <ChevronUp size={14} color="rgba(255,255,255,0.8)" /> : <ChevronDown size={14} color="rgba(255,255,255,0.8)" />
+                    )}
+                </div>
+                <button onClick={(e) => { e.stopPropagation(); handleReset(); }} className="reset-btn" aria-label="Reset Bracket" style={{ padding: isExperimentalMobile ? '6px' : '4px' }}>
+                  <RotateCcw size={isExperimentalMobile ? 12 : 14} />
                 </button>
               </div>
 
-              <div className="predict-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-                  {['Safe', 'Mid', 'Wild'].map((mode) => (
-                      <button 
-                          key={mode} 
-                          className={`mode-btn mode-btn--${mode.toLowerCase()} ${predictMode === mode ? 'active' : ''}`}
-                          onClick={() => handlePredict(mode)}
-                      >
-                          {mode}
-                      </button>
-                  ))}
-              </div>
+              {(!isExperimentalMobile || isAutoPredictOpen) && (
+                  <div className="predict-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: isExperimentalMobile ? '4px' : '20px' }}>
+                      {['Safe', 'Mid', 'Wild'].map((mode) => (
+                          <button 
+                              key={mode} 
+                              className={`mode-btn mode-btn--${mode.toLowerCase()} ${predictMode === mode ? 'active' : ''}`}
+                              onClick={() => handlePredict(mode)}
+                              style={{ padding: isExperimentalMobile ? '4px 8px' : '', fontSize: isExperimentalMobile ? '12px' : '' }}
+                          >
+                              {mode}
+                          </button>
+                      ))}
+                  </div>
+              )}
             </div>
         )}
       </div>
 
-      <div className="share-controls-wrapper" style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end' }}>
+      <div className="share-controls-wrapper" style={{ 
+          position: isExperimentalMobile ? 'fixed' : 'absolute', 
+          top: isExperimentalMobile ? '12px' : '24px', 
+          right: isExperimentalMobile ? '12px' : '24px', 
+          zIndex: isExperimentalMobile ? 50 : 10, 
+          display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end' 
+      }}>
           {isSharedView ? (
               <>
                   <div className="shared-name-label" style={{ color: 'white', fontWeight: 600, fontSize: '15px', padding: '6px 0', width: '200px', textAlign: 'center' }}>
@@ -288,45 +324,106 @@ function App() {
                   </button>
               </>
           ) : (
-              <>
-                  <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '6px',
-                      padding: '8px 12px',
-                      width: '200px',
-                      transition: 'border-color 150ms ease-out',
-                      boxSizing: 'border-box'
-                  }}
-                  onFocusCapture={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'}
-                  onBlurCapture={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
-                  >
-                      <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', whiteSpace: 'nowrap' }}>Your Name</span>
-                      <input 
-                          className="username-input"
-                          value={username}
-                          maxLength={20}
-                          onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ''))}
-                          style={{
-                              flex: 1,
-                              background: 'transparent',
-                              border: 'none',
-                              color: 'white',
-                              fontSize: '13px',
-                              textAlign: 'right',
-                              outline: 'none',
-                              fontFamily: 'inherit',
-                              minWidth: 0
-                          }}
-                      />
+              isExperimentalMobile ? (
+                  <div style={{ position: 'relative' }}>
+                      <button 
+                          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                          style={{ background: 'rgba(18, 19, 22, 0.7)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.05)', color: 'white', padding: '10px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, position: 'relative' }}
+                      >
+                          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                      </button>
+                      
+                      {isMobileMenuOpen && (
+                          <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100dvh', zIndex: 9999 }}>
+                              {/* Backdrop */}
+                              <div 
+                                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                              />
+                              
+                              {/* Top Sheet Modal */}
+                              <div style={{ 
+                                  position: 'absolute', top: 0, left: 0, width: '100%', 
+                                  background: 'var(--bg)', borderBottom: '1px solid rgba(255,255,255,0.1)', 
+                                  padding: '80px 24px 24px 24px', borderBottomLeftRadius: '24px', borderBottomRightRadius: '24px', 
+                                  display: 'flex', flexDirection: 'column', gap: '20px', 
+                                  boxSizing: 'border-box', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' 
+                              }}>
+                                  
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', height: '34px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '6px', padding: '8px 12px', boxSizing: 'border-box' }}>
+                                          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', whiteSpace: 'nowrap' }}>Name</span>
+                                          <input 
+                                              className="username-input"
+                                              type="text" 
+                                              value={username}
+                                              maxLength={20}
+                                              onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ''))}
+                                              style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '13px', textAlign: 'right', outline: 'none', flex: 1, minWidth: 0, fontWeight: '500' }}
+                                          />
+                                      </div>
+                                      
+                                      <button 
+                                          onClick={() => { setIsMobileMenuOpen(false); handleShareClick(); }} 
+                                          style={{ width: '100%', height: '34px', padding: '8px 12px', background: 'rgba(255, 255, 255, 0.15)', color: 'white', border: 'none', borderRadius: '6px', fontSize: '13px', display: 'flex', gap: '6px', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', cursor: 'pointer', transition: 'background 150ms', fontWeight: '500' }}
+                                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'} 
+                                          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
+                                      >
+                                          <Share2 size={14} /> Share
+                                      </button>
+                                  </div>
+                                  
+                                  <hr style={{ width: '100%', border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '4px 0' }} />
+                                  
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.4', textAlign: 'center' }}>
+                                      <span>Based on design by <a href="https://x.com/EmilioSansolini" target="_blank" rel="noreferrer" style={{color: 'rgba(255,255,255,0.8)', textDecoration: 'underline'}}>Emilio Sansolini</a></span>
+                                      <span>Made by <a href="https://x.com/dondon0don" target="_blank" rel="noreferrer" style={{color: 'rgba(255,255,255,0.8)', textDecoration: 'underline'}}>Kaustubh</a></span>
+                                  </div>
+                              </div>
+                          </div>
+                      )}
                   </div>
-                  <button style={{ width: '200px', height: '34px', padding: '8px 12px', background: 'rgba(255, 255, 255, 0.15)', color: 'white', border: 'none', borderRadius: '6px', fontSize: '13px', display: 'flex', gap: '6px', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', cursor: 'pointer', transition: 'background 150ms', fontWeight: '500' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'} onClick={handleShareClick}>
-                      <Share2 size={14} />
-                      Share
-                  </button>
-              </>
+              ) : (
+                  <>
+                      <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          borderRadius: '6px',
+                          padding: '8px 12px',
+                          width: '200px',
+                          transition: 'border-color 150ms ease-out',
+                          boxSizing: 'border-box'
+                      }}
+                      onFocusCapture={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'}
+                      onBlurCapture={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
+                      >
+                          <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', whiteSpace: 'nowrap' }}>Your Name</span>
+                          <input 
+                              className="username-input"
+                              value={username}
+                              maxLength={20}
+                              onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ''))}
+                              style={{
+                                  flex: 1,
+                                  background: 'transparent',
+                                  border: 'none',
+                                  color: 'white',
+                                  fontSize: '13px',
+                                  textAlign: 'right',
+                                  outline: 'none',
+                                  fontFamily: 'inherit',
+                                  minWidth: 0
+                              }}
+                          />
+                      </div>
+                      <button style={{ width: '200px', height: '34px', padding: '8px 12px', background: 'rgba(255, 255, 255, 0.15)', color: 'white', border: 'none', borderRadius: '6px', fontSize: '13px', display: 'flex', gap: '6px', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', cursor: 'pointer', transition: 'background 150ms', fontWeight: '500' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'} onClick={handleShareClick}>
+                          <Share2 size={14} />
+                          Share
+                      </button>
+                  </>
+              )
           )}
       </div>
 
@@ -338,6 +435,7 @@ function App() {
         onFetchStateChange={setIsFetching}
         readOnly={isSharedView}
         sharedWinners={sharedWinners}
+        isMobilePanzoomActive={isExperimentalMobile}
       />
       
       {modalState.type && (
@@ -388,42 +486,44 @@ function App() {
         </div>
       )}
 
-      <div className="footer-info" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <button 
-            onClick={() => setShowCredits(!showCredits)}
-            style={{ 
-                background: 'rgba(255,255,255,0.05)', 
-                border: '1px solid rgba(255,255,255,0.1)', 
-                color: 'rgba(255,255,255,0.7)', 
-                width: '40px', 
-                height: '40px', 
-                borderRadius: '50%', 
+      {!isExperimentalMobile && (
+          <div className="footer-info" style={{ position: 'absolute', zIndex: 10, display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+                onClick={() => setShowCredits(!showCredits)}
+                style={{ 
+                    background: 'rgba(255,255,255,0.05)', 
+                    border: '1px solid rgba(255,255,255,0.1)', 
+                    color: 'rgba(255,255,255,0.7)', 
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '50%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    cursor: 'pointer',
+                    transition: 'background 150ms',
+                    flexShrink: 0
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+            >
+                {showCredits ? <X size={18} /> : <span style={{ fontFamily: 'Georgia, serif', fontSize: '20px', fontStyle: 'italic', fontWeight: '500' }}>i</span>}
+            </button>
+            <div style={{ 
                 display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                cursor: 'pointer',
-                transition: 'background 150ms',
-                flexShrink: 0
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-        >
-            {showCredits ? <X size={18} /> : <span style={{ fontFamily: 'Georgia, serif', fontSize: '20px', fontStyle: 'italic', fontWeight: '500' }}>i</span>}
-        </button>
-        <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '2px',
-            overflow: 'hidden',
-            maxWidth: showCredits ? '400px' : '0px',
-            opacity: showCredits ? 1 : 0,
-            transition: 'max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out',
-            whiteSpace: 'nowrap'
-        }}>
-          <p>Based on design shared by <a href="https://x.com/mkobach/status/2071353471295430705" target="_blank" rel="noreferrer">Matthew Kobach</a></p>
-          <p>Made by <a href="https://x.com/dondon0don" target="_blank" rel="noreferrer">Kaustubh</a></p>
-        </div>
-      </div>
+                flexDirection: 'column', 
+                gap: '2px',
+                overflow: 'hidden',
+                maxWidth: showCredits ? '400px' : '0px',
+                opacity: showCredits ? 1 : 0,
+                transition: 'max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out',
+                whiteSpace: 'nowrap'
+            }}>
+              <p>Based on design by <a href="https://x.com/EmilioSansolini" target="_blank" rel="noreferrer">Emilio Sansolini</a></p>
+              <p>Made by <a href="https://x.com/dondon0don" target="_blank" rel="noreferrer">Kaustubh</a></p>
+            </div>
+          </div>
+      )}
     </div>
     </>
   );

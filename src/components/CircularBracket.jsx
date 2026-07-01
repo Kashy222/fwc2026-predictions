@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef, useLayoutEffect, useImperativeHandle, forwardRef } from 'react';
-import { Trophy } from 'lucide-react';
+import { Trophy, Shrink } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import Panzoom from '@panzoom/panzoom';
 import '../App.css';
 
 const TEAMS = [
@@ -214,6 +215,61 @@ const CircularBracket = forwardRef((props, ref) => {
         stopConfetti();
     };
   }, []);
+
+  const bracketContainerRef = useRef(null);
+  const panzoomRef = useRef(null);
+  const [showPanzoomHint, setShowPanzoomHint] = useState(false);
+  const [panzoomState, setPanzoomState] = useState({ scale: 1, x: 0, y: 0 });
+
+  useEffect(() => {
+      if (props.isMobilePanzoomActive && bracketContainerRef.current) {
+          const el = bracketContainerRef.current;
+          const bracketNaturalSize = 1600;
+          const startScale = Math.min(window.innerWidth, window.innerHeight) / bracketNaturalSize;
+
+          const panzoom = Panzoom(el, {
+              maxScale: 3,
+              minScale: startScale,
+              step: 0.1,
+              canvas: true,
+              startScale: startScale
+          });
+          panzoomRef.current = panzoom;
+
+          const parent = el.parentElement;
+          parent.addEventListener('wheel', panzoom.zoomWithWheel);
+
+          const handlePanzoomChange = (e) => {
+              setPanzoomState({ scale: e.detail.scale, x: e.detail.x, y: e.detail.y });
+          };
+          
+          const handlePanzoomEnd = (e) => {
+              const minScale = panzoom.getOptions().minScale;
+              if (panzoom.getScale() <= minScale + 0.01) {
+                  panzoom.pan(0, 0, { animate: true });
+              }
+          };
+
+          el.addEventListener('panzoomchange', handlePanzoomChange);
+          el.addEventListener('panzoomend', handlePanzoomEnd);
+          
+          setTimeout(() => {
+              panzoom.zoom(startScale, { animate: false });
+              panzoom.pan(0, 0, { animate: false });
+          }, 0);
+
+          if (!localStorage.getItem('panzoom-hint-dismissed')) {
+              setShowPanzoomHint(true);
+          }
+
+          return () => {
+              parent.removeEventListener('wheel', panzoom.zoomWithWheel);
+              el.removeEventListener('panzoomchange', handlePanzoomChange);
+              el.removeEventListener('panzoomend', handlePanzoomEnd);
+              if (panzoom.destroy) panzoom.destroy();
+          };
+      }
+  }, [props.isMobilePanzoomActive]);
 
   const svgRef = useRef(null);
   const teamRefs = useRef({});
@@ -661,8 +717,149 @@ const CircularBracket = forwardRef((props, ref) => {
   }, []);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div className="circle-points">
+    <div style={props.isMobilePanzoomActive ? { position: 'relative', width: '100vw', height: '100dvh', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' } : { position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      
+      {props.isMobilePanzoomActive && showPanzoomHint && (() => {
+          const currentMinScale = panzoomRef.current ? panzoomRef.current.getOptions().minScale : Math.min(window.innerWidth, window.innerHeight) / 1600;
+          const isZoomedIn = panzoomState.scale > currentMinScale + 0.02;
+          if (isZoomedIn && !localStorage.getItem('panzoom-hint-dismissed')) {
+              localStorage.setItem('panzoom-hint-dismissed', 'true');
+              setTimeout(() => setShowPanzoomHint(false), 0);
+          }
+          if (isZoomedIn) return null;
+          return (
+              <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, fontSize: '11px', color: 'rgba(255,255,255,0.9)', width: '300px', textAlign: 'center', pointerEvents: 'none', lineHeight: '1.5', textShadow: '0 2px 6px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9)' }}>
+                  Pinch-To-Zoom &amp; Drag to move to desired piece in the bracket. Use minimap for guidance. Use <Shrink size={10} style={{ display: 'inline-block', verticalAlign: 'middle', margin: '0 2px' }} /> to reset zoom.
+              </div>
+          );
+      })()}
+      {props.isMobilePanzoomActive && (() => {
+          const currentMinScale = panzoomRef.current ? panzoomRef.current.getOptions().minScale : Math.min(window.innerWidth, window.innerHeight) / 1600;
+          const isZoomedIn = panzoomState.scale > currentMinScale + 0.02;
+          return (
+          <div className="minimap" style={{
+              position: 'absolute',
+              bottom: '24px', 
+              right: '24px',
+              width: '80px',
+              height: '80px',
+              background: 'rgba(18, 19, 22, 0.7)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '8px',
+              zIndex: 100,
+              pointerEvents: 'none',
+              overflow: 'hidden',
+              opacity: isZoomedIn ? 1 : 0,
+              transform: isZoomedIn ? 'translateY(0) scale(1)' : 'translateY(4px) scale(0.9)',
+              transition: 'opacity 0.2s ease, transform 0.2s ease',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+          }}>
+              <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: '60px',
+                  height: '60px',
+                  transform: 'translate(-50%, -50%)',
+                  borderRadius: '4px',
+                  background: 'rgba(0,0,0,0.2)'
+              }}>
+                  {/* Miniature Bracket Mockup */}
+                  <svg viewBox="0 0 100 100" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.6 }}>
+                      <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                      <circle cx="50" cy="50" r="35" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                      <circle cx="50" cy="50" r="25" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+                      <circle cx="50" cy="50" r="15" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
+                      <circle cx="50" cy="50" r="5" fill="rgba(212,175,55,0.8)" />
+                  </svg>
+                  {/* Viewport Box */}
+                  {(() => {
+                      const minimapSize = 60;
+                      const canvasSize = 1600;
+                      const scaleRatio = minimapSize / canvasSize;
+                      
+                      const vpWidth = (window.innerWidth / panzoomState.scale) * scaleRatio;
+                      const vpHeight = (window.innerHeight / panzoomState.scale) * scaleRatio;
+                      
+                      const vpx = (minimapSize / 2) - vpWidth / 2 - (panzoomState.x / panzoomState.scale) * scaleRatio;
+                      const vpy = (minimapSize / 2) - vpHeight / 2 - (panzoomState.y / panzoomState.scale) * scaleRatio;
+                      
+                      return (
+                          <div style={{
+                              position: 'absolute',
+                              left: `${vpx}px`,
+                              top: `${vpy}px`,
+                              width: `${vpWidth}px`,
+                              height: `${vpHeight}px`,
+                              border: '1px solid #fff',
+                              background: 'rgba(255,255,255,0.2)',
+                              boxShadow: '0 0 4px rgba(0,0,0,0.5)'
+                          }} />
+                      );
+                  })()}
+              </div>
+          </div>
+          );
+      })()}
+
+      {/* Reset Zoom Button */}
+      {props.isMobilePanzoomActive && (() => {
+          const currentMinScale = panzoomRef.current ? panzoomRef.current.getOptions().minScale : Math.min(window.innerWidth, window.innerHeight) / 1600;
+          const isZoomedIn = panzoomState.scale > currentMinScale + 0.02;
+          return (
+              <button 
+                  onClick={() => {
+                      if (panzoomRef.current) {
+                          panzoomRef.current.pan(0, 0, { animate: true });
+                          panzoomRef.current.zoom(currentMinScale, { animate: true });
+                      }
+                  }}
+                  style={{
+                      position: 'absolute',
+                      bottom: '44px',
+                      right: '116px', // 24px (right) + 80px (minimap) + 12px (gap)
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      background: 'rgba(18, 19, 22, 0.7)',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      zIndex: 100,
+                      cursor: 'pointer',
+                      opacity: isZoomedIn ? 1 : 0,
+                      pointerEvents: isZoomedIn ? 'auto' : 'none',
+                      transform: isZoomedIn ? 'translateY(0) scale(1)' : 'translateY(4px) scale(0.9)',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                  }}
+              >
+                  <Shrink size={18} />
+              </button>
+          );
+      })()}
+
+      <div 
+        className={`circle-points ${props.isMobilePanzoomActive ? 'circle-points--mobile' : ''}`}
+        ref={bracketContainerRef}
+        onDoubleClick={(e) => {
+            if (props.isMobilePanzoomActive && panzoomRef.current) {
+                const zoomInScale = Math.min(panzoomRef.current.getScale() * 1.5, 3);
+                panzoomRef.current.zoomToPoint(zoomInScale, e, { animate: true });
+            }
+        }}
+        style={props.isMobilePanzoomActive ? { 
+            position: 'absolute', top: '50%', left: '50%', 
+            width: '1600px', height: '1600px', 
+            marginTop: '-800px', marginLeft: '-800px',
+            flexShrink: 0, transformOrigin: 'center center' 
+        } : {}}
+      >
         
         <svg ref={svgRef} className="circle-points__connector" viewBox="0 0 100 100" aria-hidden="true" style={{ position: 'absolute', width: '100%', height: '100%' }}>
           {links.map(link => {
@@ -720,13 +917,13 @@ const CircularBracket = forwardRef((props, ref) => {
              <circle cx="320" cy="320" r="240" fill="url(#trophy-glow-outer)" />
              <circle cx="320" cy="320" r="135" fill="url(#trophy-glow-inner)" />
            </svg>
-           <img alt="Trophy" src="/trophy.png" style={{ height: '110px', position: 'relative', zIndex: 1 }} />
+           <img alt="Trophy" src="/trophy.png" className="circle-points__trophy-image" style={{ position: 'relative', zIndex: 1 }} />
         </div>
 
 
         {nodes.map(node => {
           if (node.round === 5) return null;
-          let dotColor = 'rgba(255, 255, 255, 0.2)';
+          let dotColor = '#3a3b3e';
           if (node.round === 0) {
               const parentMatch = matchesList.find(m => m.round === 1 && m.index === Math.floor(node.index / 2));
               if (parentMatch && parentMatch.winner === node.team) {
@@ -746,7 +943,7 @@ const CircularBracket = forwardRef((props, ref) => {
                 transform: 'translate(-50%, -50%)',
                 zIndex: 1,
                 backgroundColor: dotColor,
-                transition: dotColor !== 'rgba(255, 255, 255, 0.2)' ? `background-color 0.2s ease ${node.round === 0 ? '0.3s' : '0.7s'}` : 'none'
+                transition: dotColor !== '#3a3b3e' ? `background-color 0.2s ease ${node.round === 0 ? '0.3s' : '0.7s'}` : 'none'
               }}
             >
             </div>

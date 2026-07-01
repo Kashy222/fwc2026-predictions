@@ -131,12 +131,15 @@
   transform: translate(-50%, -50%);
 }
 
-.circle-points__point--team {
-  width: auto;
-  height: auto;
+.circle-points__point.circle-points__point--team {
+  width: 0;
+  height: 0;
   background: transparent;
   border: none;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .circle-points__flag {
@@ -164,6 +167,26 @@
 .junction-dot {
   fill: #666;
   transition: fill 0.2s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Mobile Panzoom Scale Adjustments (1600/1200 = 1.33x) */
+.circle-points--mobile .circle-points__flag {
+  width: 5.5rem;
+  height: 5.5rem;
+}
+.circle-points__trophy-image {
+  height: 110px;
+}
+.circle-points--mobile .circle-points__trophy-image {
+  height: 142px;
+}
+.circle-points--mobile .circle-points__point {
+  width: 8px;
+  height: 8px;
+}
+.circle-points--mobile .circle-points__dot-marker {
+  width: 0.33rem;
+  height: 0.33rem;
 }
 
 .last-updated-row {
