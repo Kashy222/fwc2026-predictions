@@ -273,8 +273,14 @@ const CircularBracket = forwardRef((props, ref) => {
       const numNodes = S[r] || 1;
       for (let i = 0; i < numNodes; i++) {
         const pt = r === 5 ? { x: 50, y: 50 } : getPoint(r, i, NODE_RADII[r]);
-        const nodeMatch = _matchesList.find(m => m.round === r + 1 && m.index === i);
-        calculatedNodes.push({ id: `node-${r}-${i}`, round: r, index: i, x: pt.x, y: pt.y, match: nodeMatch });
+        let nodeMatch = null;
+        let nodeTeam = null;
+        if (r > 0) {
+            nodeMatch = _matchesList.find(m => m.round === r && m.index === i);
+        } else {
+            nodeTeam = _leaves[i].team;
+        }
+        calculatedNodes.push({ id: `node-${r}-${i}`, round: r, index: i, x: pt.x, y: pt.y, match: nodeMatch, team: nodeTeam });
       }
     }
 
@@ -706,7 +712,12 @@ const CircularBracket = forwardRef((props, ref) => {
         {nodes.map(node => {
           if (node.round === 5) return null;
           let dotColor = 'rgba(255, 255, 255, 0.2)';
-          if (node.match && node.match.winner) {
+          if (node.round === 0) {
+              const parentMatch = matchesList.find(m => m.round === 1 && m.index === Math.floor(node.index / 2));
+              if (parentMatch && parentMatch.winner === node.team) {
+                  dotColor = TEAM_COLORS[node.team]?.[0] || dotColor;
+              }
+          } else if (node.match && node.match.winner) {
               dotColor = TEAM_COLORS[node.match.winner]?.[0] || dotColor;
           }
           return (
