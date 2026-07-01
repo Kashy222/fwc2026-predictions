@@ -151,7 +151,8 @@
 }
 
 .loser-flag {
-  filter: grayscale(100%) brightness(50%);
+  filter: grayscale(100%) contrast(120%);
+  opacity: 0.3;
 }
 
 .circle-points__dot-marker {
