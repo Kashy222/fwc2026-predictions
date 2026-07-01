@@ -104,7 +104,11 @@ const TEAM_COLORS = {
   'es': ['#AA151B', '#F1BF00'],
   'se': ['#006AA7', '#FECC00'],
   'ch': ['#FF0000', '#FFFFFF'],
-  'us': ['#B22234', '#FFFFFF', '#3C3B6E']
+  'us': ['#B22234', '#FFFFFF', '#3C3B6E'],
+  'ci': ['#F77F00', '#FFFFFF', '#009E60'],
+  'jp': ['#000555', '#FFFFFF', '#BC002D'],
+  'no': ['#EF2B2D', '#002868', '#FFFFFF'],
+  'dz': ['#006233', '#FFFFFF', '#D21034']
 };
 
 const TEAM_RANK_POINTS = {
