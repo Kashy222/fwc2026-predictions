@@ -746,7 +746,7 @@ const CircularBracket = forwardRef((props, ref) => {
                 transform: 'translate(-50%, -50%)',
                 zIndex: 1,
                 backgroundColor: dotColor,
-                transition: dotColor !== 'rgba(255, 255, 255, 0.2)' ? 'background-color 0.2s ease 0.7s' : 'none'
+                transition: dotColor !== 'rgba(255, 255, 255, 0.2)' ? `background-color 0.2s ease ${node.round === 0 ? '0.3s' : '0.7s'}` : 'none'
               }}
             >
             </div>
