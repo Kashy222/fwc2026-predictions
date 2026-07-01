@@ -119,6 +119,7 @@
   stroke-width: 0.15;
   stroke: var(--connector-color);
   fill: none;
+  transition: stroke 0.2s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .circle-points__point {
@@ -163,6 +164,7 @@
 }
 .junction-dot {
   fill: #666;
+  transition: fill 0.2s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .last-updated-row {
