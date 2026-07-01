@@ -744,13 +744,11 @@ const CircularBracket = forwardRef((props, ref) => {
                 left: `${node.x}%`, 
                 top: `${node.y}%`, 
                 transform: 'translate(-50%, -50%)',
-                zIndex: 1
-              }}
-            >
-              <span className="circle-points__dot-marker" aria-hidden="true" style={{ 
+                zIndex: 1,
                 backgroundColor: dotColor,
                 transition: dotColor !== 'rgba(255, 255, 255, 0.2)' ? 'background-color 0.2s ease 0.7s' : 'none'
-              }}></span>
+              }}
+            >
             </div>
           );
         })}
