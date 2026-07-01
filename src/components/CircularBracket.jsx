@@ -58,6 +58,7 @@ function getFlagUrl(code) {
 const getTeamName = (code) => {
   if (code === 'gb-eng') return 'England';
   if (code === 'gb-wls') return 'Wales';
+  if (code === 'cd') return 'DR Congo';
   const name = new Intl.DisplayNames(['en'], { type: 'region' }).of(code.toUpperCase());
   return name || code.toUpperCase();
 };
