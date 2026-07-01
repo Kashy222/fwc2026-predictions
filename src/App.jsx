@@ -1,8 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, RotateCcw, Share2, Copy, X } from 'lucide-react';
 import './App.css';
-import CircularBracket from './components/CircularBracket';
+import CircularBracket, { getTeamName } from './components/CircularBracket';
 import QRCode from 'react-qr-code';
+
+const isMobile = /iPhone|Android|Mobile/i.test(navigator.userAgent);
+const isSmallScreen = window.innerWidth < 1024;
+const showFullBracket = !isMobile && !isSmallScreen;
+const hasShareParam = new URLSearchParams(window.location.search).has('share');
 
 let initialSharedUsername = '';
 let initialSharedWinners = null;
@@ -21,6 +26,131 @@ try {
   }
 } catch (e) {
   console.error("Invalid share link");
+}
+
+
+function MobileVisitorScreen() {
+    const [copied, setCopied] = useState(false);
+    const url = "https://fwc2026-predictions.vercel.app";
+    const mailto = `mailto:?subject=FWC 2026 Predictions Bracket&body=Open this on your desktop or tablet: ${url}`;
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+    };
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#121316', minHeight: '100vh', padding: '32px 16px', boxSizing: 'border-box' }}>
+            <div style={{ maxWidth: '360px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+                <img src="/og-image.png" alt="Bracket Preview" style={{ width: '280px', borderRadius: '12px', objectFit: 'cover' }} />
+                <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'white', margin: 0, textAlign: 'center' }}>Best experienced on a bigger screen</h1>
+                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', margin: 0, maxWidth: '300px', textAlign: 'center', lineHeight: '1.5' }}>
+                    The full interactive bracket needs space to shine. Scan the code or send the link to your laptop or tablet.
+                </p>
+                <div style={{ width: '220px', background: 'white', borderRadius: '16px', padding: '16px', boxSizing: 'border-box' }}>
+                    <QRCode value={url} size={188} style={{ width: '100%', height: 'auto' }} />
+                </div>
+                <button 
+                    onClick={handleCopy}
+                    style={{ width: '100%', maxWidth: '280px', height: '44px', background: 'transparent', border: '1px solid white', color: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                    {copied ? 'Copied!' : 'Copy Link'}
+                </button>
+                <a href={mailto} style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>
+                    or email it to yourself →
+                </a>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', margin: 0, textAlign: 'center' }}>
+                    Your email ID is never stored or shared — this opens your own mail app directly.
+                </p>
+            </div>
+        </div>
+    );
+}
+
+function MobileSharedScreen() {
+    const [copied, setCopied] = useState(false);
+    const url = window.location.href;
+    const isComplete = initialSharedWinners && initialSharedWinners.length === 31 && initialSharedWinners[30];
+    const winnerCode = isComplete ? initialSharedWinners[30] : null;
+    const winnerTeamName = winnerCode ? getTeamName(winnerCode) : null;
+    const username = initialSharedUsername || "A Fan";
+    const mailto = `mailto:?subject=${username}'s WC 2026 Bracket&body=See ${username}'s World Cup 2026 predictions — open on desktop or tablet: ${url}`;
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+    };
+
+    const handleMakeOwnPrediction = () => {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        window.location.reload();
+    };
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#121316', minHeight: '100vh', padding: '32px 16px', boxSizing: 'border-box' }}>
+            <div style={{ maxWidth: '360px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+                {winnerCode ? (
+                    <img 
+                       src={`https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.5/flags/1x1/${winnerCode}.svg`} 
+                       alt="Winner Flag" 
+                       style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.2)' }} 
+                    />
+                ) : (
+                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>
+                        🏆
+                    </div>
+                )}
+                
+                <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'white', margin: 0, textAlign: 'center' }}>
+                    {username}'s Prediction
+                </h1>
+                
+                {winnerTeamName ? (
+                    <p style={{ fontSize: '15px', color: '#F5A623', margin: 0, textAlign: 'center' }}>
+                        🏆 Predicts {winnerTeamName} to win it all
+                    </p>
+                ) : (
+                    <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', margin: 0, textAlign: 'center' }}>
+                        Bracket in progress...
+                    </p>
+                )}
+
+                <button 
+                    onClick={handleMakeOwnPrediction}
+                    style={{ width: '100%', maxWidth: '280px', height: '48px', background: 'white', color: '#0a0a0c', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '600', cursor: 'pointer' }}
+                >
+                    Make Your Own Prediction
+                </button>
+
+                <hr style={{ width: '100%', maxWidth: '280px', border: 'none', borderTop: '1px solid rgba(255,255,255,0.2)', margin: 0 }} />
+                
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', margin: 0, textAlign: 'center' }}>
+                    See the full bracket on desktop or tablet
+                </p>
+
+                <div style={{ width: '220px', background: 'white', borderRadius: '16px', padding: '16px', boxSizing: 'border-box' }}>
+                    <QRCode value={url} size={188} style={{ width: '100%', height: 'auto' }} />
+                </div>
+
+                <button 
+                    onClick={handleCopy}
+                    style={{ width: '100%', maxWidth: '280px', height: '44px', background: 'transparent', border: '1px solid white', color: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                    {copied ? 'Copied!' : 'Copy Link'}
+                </button>
+
+                <a href={mailto} style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>
+                    or email it to yourself →
+                </a>
+                
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', margin: 0, textAlign: 'center' }}>
+                    Your email ID is never stored or shared — this opens your own mail app directly.
+                </p>
+            </div>
+        </div>
+    );
 }
 
 const ADJECTIVES = ["Swift", "Golden", "Bold", "Lucky", "Mighty", "Brave", "Super", "Cosmic", "Epic", "Magic"];
@@ -89,41 +219,15 @@ function App() {
       generateShareLink();
   };
 
+  if (!showFullBracket) {
+      if (hasShareParam) {
+          return <MobileSharedScreen />;
+      }
+      return <MobileVisitorScreen />;
+  }
+
   return (
     <>
-      <div className="mobile-warning">
-        {isSharedView ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-            {sharedWinners && sharedWinners[30] && (
-              <img 
-                 src={`https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.5/flags/1x1/${sharedWinners[30]}.svg`} 
-                 alt="Winner Flag" 
-                 style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.2)', marginBottom: '16px' }} 
-              />
-            )}
-            <h2>{sharedUsername}'s Prediction</h2>
-            <button 
-              onClick={() => window.location.href = '/'} 
-              style={{ marginTop: '24px', background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px 24px', borderRadius: '8px', fontSize: '16px', fontWeight: 600, cursor: 'pointer' }}
-            >
-              Make Your Own Prediction
-            </button>
-            <div style={{ marginTop: '48px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px', width: '100%', textAlign: 'center' }}>
-              <h3 style={{ fontSize: '18px', color: 'rgba(255,255,255,0.6)', marginBottom: '8px', fontWeight: 600 }}>Desktop & Tablet Only</h3>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px' }}>Please open this link on a larger screen to explore the interactive bracket.</p>
-            </div>
-          </div>
-        ) : (
-          <>
-            <h2>Desktop & Tablet Only</h2>
-            <p>Please open this link on a larger screen to explore the interactive bracket.</p>
-            <div style={{ marginTop: '32px', background: 'white', padding: '16px', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-               <QRCode value="https://fwc2026-predictions.vercel.app/" size={160} />
-            </div>
-            <p style={{ marginTop: '16px', fontWeight: '600', fontSize: '18px', textAlign: 'center' }}>Scan this to open on tablet or desktop</p>
-          </>
-        )}
-      </div>
       <div className="app-container">
       <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '140px', marginBottom: '12px' }} />

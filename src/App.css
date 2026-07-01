@@ -312,36 +312,4 @@
   border-color: #f97316;
 }
 
-.mobile-warning {
-  display: none;
-  height: 100vh;
-  width: 100vw;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 32px;
-  background-color: var(--bg-color);
-  color: white;
-  box-sizing: border-box;
-}
-.mobile-warning h2 {
-  font-size: 24px;
-  margin: 0 0 12px 0;
-  font-weight: 600;
-}
-.mobile-warning p {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 0;
-}
 
-@media (max-width: 767px) {
-  .mobile-warning {
-    display: flex;
-  }
-  .app-container {
-    display: none !important;
-  }
-}

@@ -55,7 +55,7 @@ function getFlagUrl(code) {
   return `https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.5/flags/1x1/${code}.svg`;
 }
 
-const getTeamName = (code) => {
+export const getTeamName = (code) => {
   if (code === 'gb-eng') return 'England';
   if (code === 'gb-wls') return 'Wales';
   if (code === 'cd') return 'DR Congo';
