@@ -108,13 +108,13 @@ function App() {
 
         {!isSharedView && (
             <div className="predict-controls-wrapper" style={{ width: '100%' }}>
-              <div style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '8px' }}>
+              <div style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '6px' }}>
                 Pick winners yourself,
               </div>
-              <div style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '8px' }}>
-                or
+              <div style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '6px' }}>
+                OR
               </div>
-              <div className="predict-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div className="predict-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <span className="predict-title" style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)' }}>
                   ✨ Auto-Predict
                 </span>

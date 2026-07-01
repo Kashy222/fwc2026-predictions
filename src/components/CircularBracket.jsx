@@ -267,7 +267,8 @@ const CircularBracket = forwardRef((props, ref) => {
       const numNodes = S[r] || 1;
       for (let i = 0; i < numNodes; i++) {
         const pt = r === 5 ? { x: 50, y: 50 } : getPoint(r, i, NODE_RADII[r]);
-        calculatedNodes.push({ id: `node-${r}-${i}`, round: r, index: i, x: pt.x, y: pt.y });
+        const nodeMatch = _matchesList.find(m => m.round === r + 1 && m.index === i);
+        calculatedNodes.push({ id: `node-${r}-${i}`, round: r, index: i, x: pt.x, y: pt.y, match: nodeMatch });
       }
     }
 
@@ -282,9 +283,11 @@ const CircularBracket = forwardRef((props, ref) => {
         const pt2Start = getPoint(r, c2Index, NODE_RADII[r]);
         const pt2End = getPoint(r, c2Index, ARC_RADII[r]);
         
+        const parentMatch = _matchesList.find(m => m.round === r + 1 && m.index === i);
+
         if (r === 4) {
-           calculatedLinks.push({ id: `path-${r}-${c1Index}`, d: `M ${pt1Start.x} ${pt1Start.y} L 50 50`, hidden: true });
-           calculatedLinks.push({ id: `path-${r}-${c2Index}`, d: `M ${pt2Start.x} ${pt2Start.y} L 50 50`, hidden: true });
+           calculatedLinks.push({ id: `path-${r}-${c1Index}`, d: `M ${pt1Start.x} ${pt1Start.y} L 50 50`, hidden: true, match: parentMatch, childIndex: 0 });
+           calculatedLinks.push({ id: `path-${r}-${c2Index}`, d: `M ${pt2Start.x} ${pt2Start.y} L 50 50`, hidden: true, match: parentMatch, childIndex: 1 });
            continue;
         }
 
@@ -296,14 +299,14 @@ const CircularBracket = forwardRef((props, ref) => {
         while (diff1 < -Math.PI) diff1 += 2 * Math.PI;
         let sweep1 = diff1 > 0 ? 1 : 0;
         const d1 = `M ${pt1Start.x} ${pt1Start.y} L ${pt1End.x} ${pt1End.y} A ${ARC_RADII[r]} ${ARC_RADII[r]} 0 0 ${sweep1} ${ptParentArc.x} ${ptParentArc.y} L ${ptParentEnd.x} ${ptParentEnd.y}`;
-        calculatedLinks.push({ id: `path-${r}-${c1Index}`, d: d1 });
+        calculatedLinks.push({ id: `path-${r}-${c1Index}`, d: d1, match: parentMatch, childIndex: 0 });
 
         let diff2 = ptParentArc.angle - pt2End.angle;
         while (diff2 > Math.PI) diff2 -= 2 * Math.PI;
         while (diff2 < -Math.PI) diff2 += 2 * Math.PI;
         let sweep2 = diff2 > 0 ? 1 : 0;
         const d2 = `M ${pt2Start.x} ${pt2Start.y} L ${pt2End.x} ${pt2End.y} A ${ARC_RADII[r]} ${ARC_RADII[r]} 0 0 ${sweep2} ${ptParentArc.x} ${ptParentArc.y} L ${ptParentEnd.x} ${ptParentEnd.y}`;
-        calculatedLinks.push({ id: `path-${r}-${c2Index}`, d: d2 });
+        calculatedLinks.push({ id: `path-${r}-${c2Index}`, d: d2, match: parentMatch, childIndex: 1 });
       }
     }
 
@@ -650,37 +653,56 @@ const CircularBracket = forwardRef((props, ref) => {
       <div className="circle-points">
         
         <svg ref={svgRef} className="circle-points__connector" viewBox="0 0 100 100" aria-hidden="true" style={{ position: 'absolute', width: '100%', height: '100%' }}>
-          {links.map(link => (
-            <path 
-              key={link.id} 
-              id={link.id} 
-              d={link.d} 
-              className="path-line" 
-              fill="none" 
-              style={link.hidden ? { stroke: 'transparent' } : {}} 
-            />
-          ))}
+          {links.map(link => {
+            let strokeColor = 'rgba(255, 255, 255, 0.2)';
+            if (!link.hidden && link.match && link.match.winner) {
+                const child = link.childIndex === 0 ? link.match.childA : link.match.childB;
+                const competitor = getCompetitor(child);
+                if (link.match.winner === competitor) {
+                    strokeColor = TEAM_COLORS[competitor]?.[0] || strokeColor;
+                }
+            }
+            return (
+              <path 
+                key={link.id} 
+                id={link.id} 
+                d={link.d} 
+                className="path-line" 
+                fill="none" 
+                style={link.hidden ? { stroke: 'transparent' } : { stroke: strokeColor }} 
+              />
+            );
+          })}
         </svg>
 
         <div className="circle-points__trophy" aria-hidden="true" style={{
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', zIndex: 0,
           display: 'flex', justifyContent: 'center', alignItems: 'center'
         }}>
-           <div style={{
-               position: 'absolute',
-               width: '140px',
-               height: '140px',
-               background: 'radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, rgba(255, 215, 0, 0) 70%)',
-               filter: 'blur(12px)',
-               zIndex: 0,
-               pointerEvents: 'none'
-           }} />
+           <svg style={{ position: 'absolute', width: '640px', height: '640px', pointerEvents: 'none', zIndex: 0 }} viewBox="0 0 640 640">
+             <defs>
+               <radialGradient id="trophy-glow-inner" cx="50%" cy="50%" r="50%">
+                 <stop offset="0%" stopColor="rgba(255, 180, 50, 0.35)" />
+                 <stop offset="100%" stopColor="rgba(255, 180, 50, 0)" />
+               </radialGradient>
+               <radialGradient id="trophy-glow-outer" cx="50%" cy="50%" r="50%">
+                 <stop offset="0%" stopColor="rgba(255, 140, 20, 0.12)" />
+                 <stop offset="100%" stopColor="rgba(255, 140, 20, 0)" />
+               </radialGradient>
+             </defs>
+             <circle cx="320" cy="320" r="320" fill="url(#trophy-glow-outer)" />
+             <circle cx="320" cy="320" r="180" fill="url(#trophy-glow-inner)" />
+           </svg>
            <img alt="Trophy" src="/trophy.png" style={{ height: '110px', position: 'relative', zIndex: 1 }} />
         </div>
 
 
         {nodes.map(node => {
           if (node.round === 5) return null;
+          let dotColor = 'rgba(255, 255, 255, 0.2)';
+          if (node.match && node.match.winner) {
+              dotColor = TEAM_COLORS[node.match.winner]?.[0] || dotColor;
+          }
           return (
             <div
               key={node.id}
@@ -693,7 +715,7 @@ const CircularBracket = forwardRef((props, ref) => {
                 zIndex: 1
               }}
             >
-              <span className="circle-points__dot-marker" aria-hidden="true"></span>
+              <span className="circle-points__dot-marker" aria-hidden="true" style={{ backgroundColor: dotColor }}></span>
             </div>
           );
         })}
