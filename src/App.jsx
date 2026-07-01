@@ -104,19 +104,7 @@ function App() {
         <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '180px', marginBottom: '16px' }} />
         <h1>Predictions<br/>Bracket</h1>
         
-        {!isSharedView && (
-            <div className="last-updated-row" style={{ alignItems: 'flex-start', flexDirection: 'column', gap: '4px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    Last Updated:
-                    {isFetching && <span className="fetching-dot"></span>}
-                </div>
-                {lastUpdatedMatch && (
-                    <div>
-                        {lastUpdatedMatch.teamA} vs {lastUpdatedMatch.teamB} ({lastUpdatedMatch.date})
-                    </div>
-                )}
-            </div>
-        )}
+
 
         {!isSharedView && (
             <div className="predict-controls-wrapper">
