@@ -923,7 +923,7 @@ const CircularBracket = forwardRef((props, ref) => {
 
         {nodes.map(node => {
           if (node.round === 5) return null;
-          let dotColor = '#3a3b3e';
+          let dotColor = '#73767a';
           if (node.round === 0) {
               const parentMatch = matchesList.find(m => m.round === 1 && m.index === Math.floor(node.index / 2));
               if (parentMatch && parentMatch.winner === node.team) {
@@ -943,7 +943,7 @@ const CircularBracket = forwardRef((props, ref) => {
                 transform: 'translate(-50%, -50%)',
                 zIndex: 1,
                 backgroundColor: dotColor,
-                transition: dotColor !== '#3a3b3e' ? `background-color 0.2s ease ${node.round === 0 ? '0.3s' : '0.7s'}` : 'none'
+                transition: dotColor !== '#73767a' ? `background-color 0.2s ease ${node.round === 0 ? '0.3s' : '0.7s'}` : 'none'
               }}
             >
             </div>
