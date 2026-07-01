@@ -100,38 +100,45 @@ function App() {
         <p style={{ marginTop: '16px', fontWeight: '600', fontSize: '18px', textAlign: 'center' }}>Scan this to open on tablet or desktop</p>
       </div>
       <div className="app-container">
-      <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-        <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '180px', marginBottom: '16px' }} />
-        <h1>Predictions<br/>Bracket</h1>
+      <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '220px', paddingLeft: '24px', boxSizing: 'border-box' }}>
+        <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '72px', marginBottom: '24px' }} />
+        <h1 style={{ fontSize: '22px', fontWeight: 700, margin: 0, marginBottom: '20px', lineHeight: 1.2 }}>Predictions<br/>Bracket</h1>
         
-
+        <hr style={{ width: '100%', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.2)', margin: 0, marginBottom: '14px' }} />
 
         {!isSharedView && (
-            <div className="predict-controls-wrapper">
-              <div className="predict-header">
-                <span className="predict-title">
+            <div className="predict-controls-wrapper" style={{ width: '100%' }}>
+              <div className="predict-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <span className="predict-title" style={{ fontSize: '14px', fontWeight: 600 }}>
                   ✨ Auto-Predict
                 </span>
-                <button onClick={handleReset} className="reset-btn" aria-label="Reset Bracket">
+                <button onClick={handleReset} className="reset-btn" aria-label="Reset Bracket" style={{ padding: '4px' }}>
                   <RotateCcw size={14} />
                 </button>
               </div>
 
-              <div className="predict-buttons">
-                  {['Safe', 'Average', 'Differential'].map((mode, idx) => (
+              <div className="predict-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+                  {['Safe', 'Average', 'Differential'].map((mode) => (
                       <button 
                           key={mode} 
                           className={`mode-btn mode-btn--${mode.toLowerCase()} ${predictMode === mode ? 'active' : ''}`}
                           onClick={() => handlePredict(mode)}
                       >
-                          <span className="mode-dots">
-                              {Array.from({ length: idx + 1 }).map((_, i) => (
-                                  <span key={i} className="dot"></span>
-                              ))}
-                          </span>
-                          <span className="mode-text">{mode}</span>
+                          {mode}
                       </button>
                   ))}
+              </div>
+              
+              <div className="last-updated-row" style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      Last Updated:
+                      {isFetching && <span className="fetching-dot" style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%' }}></span>}
+                  </div>
+                  {lastUpdatedMatch && (
+                      <div style={{ marginTop: '2px' }}>
+                          {lastUpdatedMatch.teamA} vs {lastUpdatedMatch.teamB} ({lastUpdatedMatch.date})
+                      </div>
+                  )}
               </div>
             </div>
         )}
