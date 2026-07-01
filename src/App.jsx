@@ -251,7 +251,9 @@ function App() {
           <h1 style={{ fontSize: isExperimentalMobile ? '16px' : '22px', fontWeight: 700, margin: 0, marginBottom: isExperimentalMobile ? '10px' : '20px', lineHeight: 1.2 }}>Predictions<br/>Bracket</h1>
         </a>
         
-        <hr style={{ width: '100%', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.2)', margin: 0, marginBottom: isExperimentalMobile ? '12px' : '24px' }} />
+        {!isSharedView && (
+          <hr style={{ width: '100%', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.2)', margin: 0, marginBottom: isExperimentalMobile ? '12px' : '24px' }} />
+        )}
 
         {!isSharedView && (
             <div className="predict-controls-wrapper" style={{ width: '100%' }}>
