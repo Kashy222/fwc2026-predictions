@@ -183,6 +183,17 @@ const CircularBracket = forwardRef((props, ref) => {
   const [hoveredNode, setHoveredNode] = useState(null);
   const [updateTick, setUpdateTick] = useState(0);
   
+  const setMatchWinner = (match, teamCode, isReal = false) => {
+      match.winner = teamCode;
+      if (isReal) match.isRealResult = true;
+      let current = match.parent;
+      while (current) {
+          current.winner = null;
+          current = current.parent;
+      }
+      setUpdateTick(t => t + 1);
+  };
+
   const autoPredictRunning = useRef(false);
 
   useEffect(() => {
@@ -216,8 +227,19 @@ const CircularBracket = forwardRef((props, ref) => {
                childA: prevRound[i],
                childB: prevRound[i + 1],
                winner: null,
-               parent: null
+               parent: null,
+               isRealResult: false
            };
+           
+           if (r === 1) {
+               const idx = i / 2;
+               const hardcoded = { 5: 'mx', 6: 'no', 7: 'br', 12: 'ma', 13: 'ca', 14: 'fr', 15: 'py' };
+               if (hardcoded[idx]) {
+                   match.winner = hardcoded[idx];
+                   match.isRealResult = true;
+               }
+           }
+           
            prevRound[i].parent = match;
            prevRound[i + 1].parent = match;
            currentRound.push(match);
@@ -228,7 +250,10 @@ const CircularBracket = forwardRef((props, ref) => {
     
     if (props.sharedWinners && props.sharedWinners.length === 31) {
         _matchesList.forEach((match, i) => {
-            match.winner = props.sharedWinners[i] || null;
+            // Respect real results even in shared view, or at least don't overwrite with nulls
+            if (!match.isRealResult || props.sharedWinners[i]) {
+                match.winner = props.sharedWinners[i] || null;
+            }
         });
     }
     
@@ -483,18 +508,10 @@ const CircularBracket = forwardRef((props, ref) => {
     }
 
     if (tp.isClickable && tp.nextMatch && !tp.nextMatch.isRealResult) {
-        tp.nextMatch.winner = tp.team;
-        let current = tp.nextMatch.parent;
-        while (current) {
-            current.winner = null;
-            current = current.parent;
-        }
-        
+        setMatchWinner(tp.nextMatch, tp.team, false);
         if (tp.nextMatch.round === 5) {
             fireConfetti(tp.team);
         }
-        
-        setUpdateTick(t => t + 1);
         return;
     }
 
@@ -519,8 +536,8 @@ const CircularBracket = forwardRef((props, ref) => {
                 const teamA = getCompetitor(match.childA);
                 const teamB = getCompetitor(match.childB);
                 if (teamA && teamB) {
-                    match.winner = pickWinner(teamA, teamB, mode);
-                    setUpdateTick(t => t + 1);
+                    const chosenWinner = pickWinner(teamA, teamB, mode);
+                    setMatchWinner(match, chosenWinner, false);
                     await sleep(250);
                 }
             }
@@ -547,94 +564,85 @@ const CircularBracket = forwardRef((props, ref) => {
     const fetchResults = async () => {
       try {
         if (props.onFetchStateChange) props.onFetchStateChange(true);
-        const res = await fetch('https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json');
+        
+        const apiKey = import.meta.env.VITE_FOOTBALL_DATA_API_KEY;
+        if (!apiKey) {
+            console.warn("No football-data.org API key found. Skipping live data fetch.");
+            if (props.onFetchStateChange) props.onFetchStateChange(false);
+            return;
+        }
+
+        const res = await fetch('https://api.football-data.org/v4/competitions/2000/matches', {
+            headers: { 'X-Auth-Token': apiKey }
+        });
+        
+        if (!res.ok) throw new Error(`API returned ${res.status}`);
+
         const data = await res.json();
         if (!data || !data.matches) return;
         
-        const newlyCompleted = [];
+        let hasUpdates = false;
+        let maxTimestamp = 0;
+        let latestMatchObj = null;
         
         for (const m of data.matches) {
-          if (m.score && m.score.ft) {
-            const t1 = m.team1;
-            const t2 = m.team2;
-            
-            for (const matchNode of matchesList) {
-               const teamA = getCompetitor(matchNode.childA);
-               const teamB = getCompetitor(matchNode.childB);
-               
-               if (teamA && teamB && !matchNode.winner) {
-                  const nameA = getTeamName(teamA);
-                  const nameB = getTeamName(teamB);
-                  
-                  if ((nameA === t1 && nameB === t2) || (nameA === t2 && nameB === t1)) {
-                      let winnerName = null;
-                      if (m.score.ft[0] > m.score.ft[1]) winnerName = m.team1;
-                      else if (m.score.ft[1] > m.score.ft[0]) winnerName = m.team2;
-                      else if (m.score.p) {
-                         if (m.score.p[0] > m.score.p[1]) winnerName = m.team1;
-                         else if (m.score.p[1] > m.score.p[0]) winnerName = m.team2;
-                      }
+            if (m.status === 'FINISHED' && m.homeTeam && m.awayTeam) {
+                const mapTLA = {
+                    'ARG': 'ar', 'FRA': 'fr', 'BEL': 'be', 'BRA': 'br', 'ENG': 'gb-eng',
+                    'POR': 'pt', 'NED': 'nl', 'ESP': 'es', 'CRO': 'hr', 'COL': 'co',
+                    'USA': 'us', 'MAR': 'ma', 'SUI': 'ch', 'GER': 'de', 'MEX': 'mx',
+                    'JPN': 'jp', 'SEN': 'sn', 'ALG': 'dz', 'EGY': 'eg', 'AUS': 'au',
+                    'CAN': 'ca', 'CPV': 'cv', 'COD': 'cd', 'ECU': 'ec', 'GHA': 'gh',
+                    'RSA': 'za', 'BIH': 'ba', 'AUT': 'at', 'PAR': 'py', 'SWE': 'se',
+                    'NOR': 'no', 'CIV': 'ci'
+                };
+                
+                const t1 = mapTLA[m.homeTeam.tla] || m.homeTeam.tla?.toLowerCase();
+                const t2 = mapTLA[m.awayTeam.tla] || m.awayTeam.tla?.toLowerCase();
+                
+                let winnerCode = null;
+                if (m.score?.winner === 'HOME_TEAM') winnerCode = t1;
+                else if (m.score?.winner === 'AWAY_TEAM') winnerCode = t2;
+                
+                if (!winnerCode) continue;
 
-                      let winningTeamCode = null;
-                      if (winnerName === nameA) winningTeamCode = teamA;
-                      else if (winnerName === nameB) winningTeamCode = teamB;
-                      
-                      if (winningTeamCode) {
-                          const getMatchTimestamp = (matchObj) => {
-                              if (!matchObj.time) return new Date(matchObj.date).getTime();
-                              const timeStr = matchObj.time.replace('UTC', 'GMT');
-                              return new Date(`${matchObj.date} ${timeStr}`).getTime();
-                          };
-                          newlyCompleted.push({
-                              node: matchNode,
-                              winner: winningTeamCode,
-                              date: m.date,
-                              timestamp: getMatchTimestamp(m),
-                              teamA: nameA,
-                              teamB: nameB,
-                              codeA: teamA,
-                              codeB: teamB
-                          });
-                      }
-                  }
-               }
+                for (const matchNode of matchesList) {
+                   const teamA = getCompetitor(matchNode.childA);
+                   const teamB = getCompetitor(matchNode.childB);
+                   
+                   if (teamA && teamB && !matchNode.winner) {
+                       if ((teamA === t1 && teamB === t2) || (teamA === t2 && teamB === t1)) {
+                           setMatchWinner(matchNode, winnerCode, true);
+                           hasUpdates = true;
+                           
+                           const matchTimestamp = new Date(m.utcDate).getTime();
+                           if (matchTimestamp > maxTimestamp) {
+                               maxTimestamp = matchTimestamp;
+                               latestMatchObj = {
+                                   date: m.utcDate.split('T')[0],
+                                   teamA: getTeamName(teamA),
+                                   teamB: getTeamName(teamB)
+                               };
+                           }
+                           break;
+                       }
+                   }
+                }
             }
-          }
         }
         
-        if (newlyCompleted.length > 0) {
-            let maxTimestamp = 0;
-            let latestMatch = null;
-            
-            for (const update of newlyCompleted) {
-                update.node.winner = update.winner;
-                update.node.isRealResult = true;
-                let p = update.node.parent;
-                while (p) { p.winner = null; p = p.parent; }
-                
-                setUpdateTick(t => t + 1);
-                
-                if (update.timestamp > maxTimestamp) {
-                    maxTimestamp = update.timestamp;
-                    latestMatch = update;
-                }
-                
-                await sleep(250);
-            }
-            
-            if (latestMatch && props.onLastUpdated) {
-                const d = new Date(latestMatch.date);
-                const formattedDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                props.onLastUpdated({
-                    teamA: getTeamAbbr(latestMatch.codeA),
-                    teamB: getTeamAbbr(latestMatch.codeB),
-                    date: formattedDate
-                });
-            }
+        if (hasUpdates && latestMatchObj && props.onLastUpdatedMatch) {
+            const d = new Date(latestMatchObj.date);
+            const formattedDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            props.onLastUpdatedMatch({
+                teamA: latestMatchObj.teamA,
+                teamB: latestMatchObj.teamB,
+                date: formattedDate
+            });
         }
         
       } catch (err) {
-        console.error("Failed to fetch worldcup.json", err);
+        console.error("Error fetching match data:", err);
       } finally {
         if (props.onFetchStateChange) props.onFetchStateChange(false);
       }
