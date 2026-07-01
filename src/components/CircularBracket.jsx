@@ -675,14 +675,29 @@ const CircularBracket = forwardRef((props, ref) => {
                 }
             }
             return (
-              <path 
-                key={link.id} 
-                id={link.id} 
-                d={link.d} 
-                className="path-line" 
-                fill="none" 
-                style={link.hidden ? { stroke: 'transparent' } : { stroke: strokeColor }} 
-              />
+              <g key={link.id}>
+                <path 
+                  d={link.d} 
+                  fill="none" 
+                  style={{ stroke: 'rgba(255, 255, 255, 0.2)', strokeWidth: 0.15 }} 
+                  visibility={link.hidden ? 'hidden' : 'visible'}
+                />
+                <path 
+                  id={link.id} 
+                  d={link.d} 
+                  className="path-line-fg" 
+                  fill="none" 
+                  pathLength="1"
+                  style={{ 
+                    stroke: strokeColor !== 'rgba(255, 255, 255, 0.2)' ? strokeColor : 'transparent',
+                    strokeWidth: 0.15,
+                    strokeDasharray: 1,
+                    strokeDashoffset: strokeColor !== 'rgba(255, 255, 255, 0.2)' ? 0 : 1,
+                    transition: 'stroke-dashoffset 0.2s cubic-bezier(0.33, 1, 0.68, 1)',
+                    visibility: link.hidden ? 'hidden' : 'visible'
+                  }} 
+                />
+              </g>
             );
           })}
         </svg>
