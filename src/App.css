@@ -171,18 +171,18 @@
 
 /* Mobile Panzoom Scale Adjustments (1600/1200 = 1.33x) */
 .circle-points--mobile .circle-points__flag {
-  width: 5.5rem;
-  height: 5.5rem;
+  width: 9rem;
+  height: 9rem;
 }
 .circle-points__trophy-image {
   height: 110px;
 }
 .circle-points--mobile .circle-points__trophy-image {
-  height: 142px;
+  height: 280px;
 }
 .circle-points--mobile .circle-points__point {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
 }
 .circle-points--mobile .circle-points__dot-marker {
   width: 0.33rem;
