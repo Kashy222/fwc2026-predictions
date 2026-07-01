@@ -246,8 +246,8 @@ function App() {
           left: isExperimentalMobile ? '12px' : '24px',
           border: isExperimentalMobile ? '1px solid rgba(255,255,255,0.05)' : 'none'
       }}>
-        <a href="https://fwc2026-predictions.vercel.app/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}>
-          <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: isExperimentalMobile ? '60px' : '140px', marginBottom: isExperimentalMobile ? '6px' : '12px' }} />
+        <a href="https://fwc2026-predictions.vercel.app/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: isExperimentalMobile ? '60px' : '140px', width: 'auto', objectFit: 'contain', marginBottom: isExperimentalMobile ? '6px' : '12px' }} />
           <h1 style={{ fontSize: isExperimentalMobile ? '16px' : '22px', fontWeight: 700, margin: 0, marginBottom: isExperimentalMobile ? '10px' : '20px', lineHeight: 1.2 }}>Predictions<br/>Bracket</h1>
         </a>
         
