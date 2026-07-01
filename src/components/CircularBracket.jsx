@@ -693,7 +693,7 @@ const CircularBracket = forwardRef((props, ref) => {
                     strokeWidth: 0.15,
                     strokeDasharray: '1',
                     strokeDashoffset: strokeColor !== 'rgba(255, 255, 255, 0.2)' ? '0' : '1',
-                    transition: 'stroke-dashoffset 0.2s cubic-bezier(0.33, 1, 0.68, 1)',
+                    transition: 'stroke-dashoffset 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)',
                     visibility: link.hidden ? 'hidden' : 'visible'
                   }} 
                 />
@@ -747,7 +747,10 @@ const CircularBracket = forwardRef((props, ref) => {
                 zIndex: 1
               }}
             >
-              <span className="circle-points__dot-marker" aria-hidden="true" style={{ backgroundColor: dotColor }}></span>
+              <span className="circle-points__dot-marker" aria-hidden="true" style={{ 
+                backgroundColor: dotColor,
+                transition: dotColor !== 'rgba(255, 255, 255, 0.2)' ? 'background-color 0.2s ease 0.7s' : 'none'
+              }}></span>
             </div>
           );
         })}
