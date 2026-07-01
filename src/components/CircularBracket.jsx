@@ -158,7 +158,8 @@ const fireConfetti = (teamCode) => {
             spread: 55,
             origin: { x: 0, y: 0.1 },
             colors: colors,
-            zIndex: 1000
+            zIndex: 1000,
+            ticks: 500
         });
         confetti({
             particleCount: 6,
@@ -166,7 +167,8 @@ const fireConfetti = (teamCode) => {
             spread: 55,
             origin: { x: 1, y: 0.1 },
             colors: colors,
-            zIndex: 1000
+            zIndex: 1000,
+            ticks: 500
         });
         if (Date.now() < end) {
             confettiFrameId = requestAnimationFrame(frame);
