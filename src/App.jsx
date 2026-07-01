@@ -108,11 +108,14 @@ function App() {
 
         {!isSharedView && (
             <div className="predict-controls-wrapper" style={{ width: '100%' }}>
-              <div style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', lineHeight: 1.5 }}>
-                Pick winners yourself,<br />or
+              <div style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '8px' }}>
+                Pick winners yourself,
+              </div>
+              <div style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', marginBottom: '8px' }}>
+                or
               </div>
               <div className="predict-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span className="predict-title" style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', lineHeight: 1.5 }}>
+                <span className="predict-title" style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)' }}>
                   ✨ Auto-Predict
                 </span>
                 <button onClick={handleReset} className="reset-btn" aria-label="Reset Bracket" style={{ padding: '4px' }}>
