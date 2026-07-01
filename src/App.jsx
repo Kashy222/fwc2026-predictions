@@ -48,8 +48,8 @@ function MobileVisitorScreen() {
                 <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', margin: 0, maxWidth: '300px', textAlign: 'center', lineHeight: '1.5' }}>
                     The full interactive bracket needs space to shine. Scan the code or send the link to your laptop or tablet.
                 </p>
-                <div style={{ width: '220px', background: 'white', borderRadius: '16px', padding: '16px', boxSizing: 'border-box' }}>
-                    <QRCode value={url} size={188} style={{ width: '100%', height: 'auto' }} />
+                <div style={{ width: '165px', background: 'white', borderRadius: '16px', padding: '16px', boxSizing: 'border-box' }}>
+                    <QRCode value={url} size={133} style={{ width: '100%', height: 'auto' }} />
                 </div>
                 <button 
                     onClick={handleCopy}
@@ -103,19 +103,19 @@ function MobileSharedScreen() {
                     </div>
                 )}
                 
-                <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'white', margin: 0, textAlign: 'center' }}>
-                    {username}'s Prediction
-                </h1>
-                
                 {winnerTeamName ? (
                     <p style={{ fontSize: '15px', color: '#F5A623', margin: 0, textAlign: 'center' }}>
-                        🏆 Predicts {winnerTeamName} to win it all
+                        Predicts {winnerTeamName} to win Football WC 2026
                     </p>
                 ) : (
                     <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', margin: 0, textAlign: 'center' }}>
                         Bracket in progress...
                     </p>
                 )}
+
+                <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'white', margin: 0, textAlign: 'center' }}>
+                    {username}'s Prediction
+                </h1>
 
                 <button 
                     onClick={handleMakeOwnPrediction}
@@ -130,8 +130,8 @@ function MobileSharedScreen() {
                     See the full bracket on desktop or tablet
                 </p>
 
-                <div style={{ width: '220px', background: 'white', borderRadius: '16px', padding: '16px', boxSizing: 'border-box' }}>
-                    <QRCode value={url} size={188} style={{ width: '100%', height: 'auto' }} />
+                <div style={{ width: '165px', background: 'white', borderRadius: '16px', padding: '16px', boxSizing: 'border-box' }}>
+                    <QRCode value={url} size={133} style={{ width: '100%', height: 'auto' }} />
                 </div>
 
                 <button 
