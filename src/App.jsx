@@ -92,12 +92,37 @@ function App() {
   return (
     <>
       <div className="mobile-warning">
-        <h2>Desktop & Tablet Only</h2>
-        <p>Please open this link on a larger screen to explore the interactive bracket.</p>
-        <div style={{ marginTop: '32px', background: 'white', padding: '16px', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-           <QRCode value="https://fwc2026-predictions.vercel.app/" size={160} />
-        </div>
-        <p style={{ marginTop: '16px', fontWeight: '600', fontSize: '18px', textAlign: 'center' }}>Scan this to open on tablet or desktop</p>
+        {isSharedView ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            {sharedWinners && sharedWinners[30] && (
+              <img 
+                 src={`https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.5/flags/1x1/${sharedWinners[30]}.svg`} 
+                 alt="Winner Flag" 
+                 style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.2)', marginBottom: '16px' }} 
+              />
+            )}
+            <h2>{sharedUsername}'s Prediction</h2>
+            <button 
+              onClick={() => window.location.href = '/'} 
+              style={{ marginTop: '24px', background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px 24px', borderRadius: '8px', fontSize: '16px', fontWeight: 600, cursor: 'pointer' }}
+            >
+              Make Your Own Prediction
+            </button>
+            <div style={{ marginTop: '48px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px', width: '100%', textAlign: 'center' }}>
+              <h3 style={{ fontSize: '18px', color: 'rgba(255,255,255,0.6)', marginBottom: '8px', fontWeight: 600 }}>Desktop & Tablet Only</h3>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px' }}>Please open this link on a larger screen to explore the interactive bracket.</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <h2>Desktop & Tablet Only</h2>
+            <p>Please open this link on a larger screen to explore the interactive bracket.</p>
+            <div style={{ marginTop: '32px', background: 'white', padding: '16px', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+               <QRCode value="https://fwc2026-predictions.vercel.app/" size={160} />
+            </div>
+            <p style={{ marginTop: '16px', fontWeight: '600', fontSize: '18px', textAlign: 'center' }}>Scan this to open on tablet or desktop</p>
+          </>
+        )}
       </div>
       <div className="app-container">
       <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
