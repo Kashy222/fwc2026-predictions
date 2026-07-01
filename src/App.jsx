@@ -85,7 +85,7 @@ function App() {
 
   const handleCompleteAndShare = async () => {
       setModalState({ type: 'loading' });
-      await bracketRef.current.autoPredict(predictMode || 'Average');
+      await bracketRef.current.autoPredict(predictMode || 'Mid');
       generateShareLink();
   };
 
@@ -100,8 +100,8 @@ function App() {
         <p style={{ marginTop: '16px', fontWeight: '600', fontSize: '18px', textAlign: 'center' }}>Scan this to open on tablet or desktop</p>
       </div>
       <div className="app-container">
-      <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '220px', paddingLeft: '24px', boxSizing: 'border-box' }}>
-        <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '72px', marginBottom: '24px' }} />
+      <div className="header-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <img src="/trophy-header.png" alt="FIFA World Cup Trophy" style={{ height: '140px', marginBottom: '24px' }} />
         <h1 style={{ fontSize: '22px', fontWeight: 700, margin: 0, marginBottom: '20px', lineHeight: 1.2 }}>Predictions<br/>Bracket</h1>
         
         <hr style={{ width: '100%', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.2)', margin: 0, marginBottom: '14px' }} />
@@ -118,7 +118,7 @@ function App() {
               </div>
 
               <div className="predict-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-                  {['Safe', 'Average', 'Differential'].map((mode) => (
+                  {['Safe', 'Mid', 'Wild'].map((mode) => (
                       <button 
                           key={mode} 
                           className={`mode-btn mode-btn--${mode.toLowerCase()} ${predictMode === mode ? 'active' : ''}`}

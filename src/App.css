@@ -253,7 +253,7 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 100px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -285,27 +285,27 @@
   border-color: #3b82f6;
 }
 
-.mode-btn--average {
+.mode-btn--mid {
   color: #4ade80;
   border-color: rgba(74, 222, 128, 0.4);
 }
-.mode-btn--average:hover {
+.mode-btn--mid:hover {
   border-color: rgba(74, 222, 128, 0.8);
 }
-.mode-btn--average.active {
+.mode-btn--mid.active {
   background: #22c55e;
   color: white;
   border-color: #22c55e;
 }
 
-.mode-btn--differential {
+.mode-btn--wild {
   color: #fb923c;
   border-color: rgba(251, 146, 60, 0.4);
 }
-.mode-btn--differential:hover {
+.mode-btn--wild:hover {
   border-color: rgba(251, 146, 60, 0.8);
 }
-.mode-btn--differential.active {
+.mode-btn--wild.active {
   background: #f97316;
   color: white;
   border-color: #f97316;

@@ -129,7 +129,7 @@ const pickWinner = (teamA, teamB, mode) => {
     if (mode === 'Safe') {
         pStrongerWins = 0.5 + (pStrongerWins - 0.5) * 1.6;
         pStrongerWins = Math.max(0.65, Math.min(0.97, pStrongerWins));
-    } else if (mode === 'Differential') {
+    } else if (mode === 'Wild') {
         pStrongerWins = 0.5 - (pStrongerWins - 0.5) * 0.8;
         pStrongerWins = Math.max(0.35, Math.min(0.5, pStrongerWins));
     } else {
@@ -524,7 +524,7 @@ const CircularBracket = forwardRef((props, ref) => {
     }
   };
 
-  const handleAutoPredict = async (mode = 'Average') => {
+  const handleAutoPredict = async (mode = 'Mid') => {
     if (autoPredictRunning.current) return;
     autoPredictRunning.current = true;
 
