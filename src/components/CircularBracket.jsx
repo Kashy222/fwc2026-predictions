@@ -251,6 +251,13 @@ const CircularBracket = forwardRef((props, ref) => {
               setPanzoomState({ scale: e.detail.scale, x: e.detail.x, y: e.detail.y });
           };
           
+          const handlePointerDown = () => {
+              setShowPanzoomHint(false);
+          };
+          
+          parent.addEventListener('pointerdown', handlePointerDown);
+          parent.addEventListener('touchstart', handlePointerDown, { passive: true });
+          
           const handlePanzoomEnd = (e) => {
               const minScale = panzoom.getOptions().minScale;
               if (panzoom.getScale() <= minScale + 0.01) {
@@ -269,6 +276,8 @@ const CircularBracket = forwardRef((props, ref) => {
 
           return () => {
               parent.removeEventListener('wheel', panzoom.zoomWithWheel);
+              parent.removeEventListener('pointerdown', handlePointerDown);
+              parent.removeEventListener('touchstart', handlePointerDown);
               el.removeEventListener('panzoomchange', handlePanzoomChange);
               el.removeEventListener('panzoomend', handlePanzoomEnd);
               if (panzoom.destroy) panzoom.destroy();
@@ -896,10 +905,10 @@ const CircularBracket = forwardRef((props, ref) => {
         </svg>
 
         <div className="circle-points__trophy" aria-hidden="true" style={{
-          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', zIndex: 0,
+          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none', zIndex: 0,
           display: 'flex', justifyContent: 'center', alignItems: 'center'
         }}>
-           <svg style={{ position: 'absolute', width: '640px', height: '640px', pointerEvents: 'none', zIndex: 0 }} viewBox="0 0 640 640">
+           <svg className="circle-points__glow" style={{ position: 'absolute', width: '640px', height: '640px', pointerEvents: 'none', zIndex: 0 }} viewBox="0 0 640 640">
              <defs>
                <radialGradient id="trophy-glow-inner" cx="50%" cy="50%" r="50%">
                  <stop offset="0%" stopColor="rgba(255, 180, 50, 0.35)" />
