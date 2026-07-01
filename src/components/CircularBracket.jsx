@@ -565,16 +565,7 @@ const CircularBracket = forwardRef((props, ref) => {
       try {
         if (props.onFetchStateChange) props.onFetchStateChange(true);
         
-        const apiKey = import.meta.env.VITE_FOOTBALL_DATA_API_KEY;
-        if (!apiKey) {
-            console.warn("No football-data.org API key found. Skipping live data fetch.");
-            if (props.onFetchStateChange) props.onFetchStateChange(false);
-            return;
-        }
-
-        const res = await fetch('https://api.football-data.org/v4/competitions/2000/matches', {
-            headers: { 'X-Auth-Token': apiKey }
-        });
+        const res = await fetch('/api/matches');
         
         if (!res.ok) throw new Error(`API returned ${res.status}`);
 
