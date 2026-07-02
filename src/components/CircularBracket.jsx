@@ -191,6 +191,7 @@ const CircularBracket = forwardRef((props, ref) => {
   const [hoveredNode, setHoveredNode] = useState(null);
   const [updateTick, setUpdateTick] = useState(0);
   const skipAnimation = useRef(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   
   const setMatchWinner = (match, teamCode, isReal = false) => {
@@ -730,6 +731,7 @@ const CircularBracket = forwardRef((props, ref) => {
         console.error("Error fetching match data:", err);
       } finally {
         if (props.onFetchStateChange) props.onFetchStateChange(false);
+        setInitialLoading(false);
         setTimeout(() => {
             skipAnimation.current = false;
         }, 100);
@@ -976,7 +978,10 @@ const CircularBracket = forwardRef((props, ref) => {
               position: 'absolute', 
               transform: 'translate(-50%, -50%)',
               zIndex: hoveredNode === tp.team ? 100 : (tp.isDefeated ? 10 : 20),
-              cursor: (tp.isClickable || tp.isRevertable || tp.isSwappable) ? 'pointer' : 'default'
+              cursor: (tp.isClickable || tp.isRevertable || tp.isSwappable) ? 'pointer' : 'default',
+              opacity: initialLoading ? 0 : 1,
+              pointerEvents: initialLoading ? 'none' : 'auto',
+              transition: initialLoading ? 'none' : 'opacity 0.2s ease-in'
             }}
             onMouseEnter={() => setHoveredNode(tp.team)}
             onMouseLeave={() => setHoveredNode(null)}
