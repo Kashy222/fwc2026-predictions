@@ -190,6 +190,8 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const CircularBracket = forwardRef((props, ref) => {
   const [hoveredNode, setHoveredNode] = useState(null);
   const [updateTick, setUpdateTick] = useState(0);
+  const [apiFetched, setApiFetched] = useState(props.readOnly);
+
   
   const setMatchWinner = (match, teamCode, isReal = false) => {
       match.winner = teamCode;
@@ -527,6 +529,10 @@ const CircularBracket = forwardRef((props, ref) => {
             return;
         }
 
+        if (!apiFetched) {
+            return;
+        }
+
         if (old.r < tp.r) {
             if (tp.r - old.r === 1) {
                 const pathId = `path-${old.r}-${old.idx}`;
@@ -596,7 +602,7 @@ const CircularBracket = forwardRef((props, ref) => {
         
         oldPositions.current[tp.team] = { r: tp.r, idx: tp.idx, x: tp.x, y: tp.y };
     });
-  }, [teamPositions, leaves]);
+  }, [teamPositions, leaves, apiFetched]);
 
   const handleTeamClick = (tp) => {
     if (props.readOnly) return;
@@ -738,11 +744,11 @@ const CircularBracket = forwardRef((props, ref) => {
                 date: formattedDate
             });
         }
-        
       } catch (err) {
         console.error("Error fetching match data:", err);
       } finally {
         if (props.onFetchStateChange) props.onFetchStateChange(false);
+        setApiFetched(true);
       }
     };
 
