@@ -308,17 +308,19 @@ const CircularBracket = forwardRef((props, ref) => {
                parent: null,
                isRealResult: false
            };
-           
-           if (r === 1) {
-               const idx = i / 2;
-               const hardcoded = { 4: 'gb-eng', 5: 'mx', 6: 'no', 7: 'br', 8: 'be', 9: 'us', 12: 'ma', 13: 'ca', 14: 'fr', 15: 'py' };
-               if (hardcoded[idx]) {
-                   match.winner = hardcoded[idx];
-                   match.isRealResult = true;
-               }
-           }
+            const idx = i / 2;
+            let cachedWinners = {};
+            try { cachedWinners = JSON.parse(localStorage.getItem('cachedMatches') || '{}'); } catch(e) {}
             
-           prevRound[i].parent = match;
+            const hardcoded = { 4: 'gb-eng', 5: 'mx', 6: 'no', 7: 'br', 8: 'be', 9: 'us', 12: 'ma', 13: 'ca', 14: 'fr', 15: 'py' };
+            const winnerCode = cachedWinners[`${r}-${idx}`] || (r === 1 ? hardcoded[idx] : null);
+            
+            if (winnerCode) {
+                match.winner = winnerCode;
+                match.isRealResult = true;
+            }
+             
+            prevRound[i].parent = match;
            prevRound[i + 1].parent = match;
            currentRound.push(match);
            _matchesList.push(match);
@@ -661,6 +663,7 @@ const CircularBracket = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (props.readOnly) return;
+    if (props.initialAutoPredict) return;
     
     const fetchResults = async () => {
       try {
@@ -676,6 +679,10 @@ const CircularBracket = forwardRef((props, ref) => {
         let hasUpdates = false;
         let maxTimestamp = 0;
         let latestMatchObj = null;
+        
+        let cachedWinners = {};
+        try { cachedWinners = JSON.parse(localStorage.getItem('cachedMatches') || '{}'); } catch(e) {}
+        let cacheChanged = false;
         
         for (const m of data.matches) {
             if (m.status === 'FINISHED' && m.homeTeam && m.awayTeam) {
@@ -706,6 +713,8 @@ const CircularBracket = forwardRef((props, ref) => {
                        if ((teamA === t1 && teamB === t2) || (teamA === t2 && teamB === t1)) {
                            setMatchWinner(matchNode, winnerCode, true);
                            hasUpdates = true;
+                           cachedWinners[`${matchNode.round}-${matchNode.index}`] = winnerCode;
+                           cacheChanged = true;
                            
                            const matchTimestamp = new Date(m.utcDate).getTime();
                            if (matchTimestamp > maxTimestamp) {
@@ -721,6 +730,10 @@ const CircularBracket = forwardRef((props, ref) => {
                    }
                 }
             }
+        }
+        
+        if (cacheChanged) {
+            localStorage.setItem('cachedMatches', JSON.stringify(cachedWinners));
         }
         
         if (hasUpdates && latestMatchObj && props.onLastUpdatedMatch) {
