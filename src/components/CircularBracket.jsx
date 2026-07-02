@@ -190,7 +190,7 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const CircularBracket = forwardRef((props, ref) => {
   const [hoveredNode, setHoveredNode] = useState(null);
   const [updateTick, setUpdateTick] = useState(0);
-  const [apiFetched, setApiFetched] = useState(props.readOnly);
+  const skipAnimation = useRef(true);
 
   
   const setMatchWinner = (match, teamCode, isReal = false) => {
@@ -510,26 +510,15 @@ const CircularBracket = forwardRef((props, ref) => {
         if (!el) return;
         
         let old = oldPositions.current[tp.team];
-        if (!old) {
-            const leafIndex = leaves.findIndex(l => l.team === tp.team);
-            let pt0;
-            if (leafIndex !== -1) {
-                pt0 = getPoint(0, leafIndex, NODE_RADII[0]);
-            } else {
-                pt0 = { x: tp.x, y: tp.y };
-            }
-            old = { r: 0, idx: leafIndex, x: pt0.x, y: pt0.y };
-            el.style.left = `${old.x}%`;
-            el.style.top = `${old.y}%`;
-            oldPositions.current[tp.team] = old;
-        }
-
-        if (old.r === tp.r && old.x === tp.x && old.y === tp.y) {
+        if (!old || skipAnimation.current) {
+            el.style.left = `${tp.x}%`;
+            el.style.top = `${tp.y}%`;
             oldPositions.current[tp.team] = { r: tp.r, idx: tp.idx, x: tp.x, y: tp.y };
             return;
         }
 
-        if (!apiFetched) {
+        if (old.r === tp.r && old.x === tp.x && old.y === tp.y) {
+            oldPositions.current[tp.team] = { r: tp.r, idx: tp.idx, x: tp.x, y: tp.y };
             return;
         }
 
@@ -602,7 +591,7 @@ const CircularBracket = forwardRef((props, ref) => {
         
         oldPositions.current[tp.team] = { r: tp.r, idx: tp.idx, x: tp.x, y: tp.y };
     });
-  }, [teamPositions, leaves, apiFetched]);
+  }, [teamPositions, leaves]);
 
   const handleTeamClick = (tp) => {
     if (props.readOnly) return;
@@ -748,7 +737,9 @@ const CircularBracket = forwardRef((props, ref) => {
         console.error("Error fetching match data:", err);
       } finally {
         if (props.onFetchStateChange) props.onFetchStateChange(false);
-        setApiFetched(true);
+        setTimeout(() => {
+            skipAnimation.current = false;
+        }, 100);
       }
     };
 
