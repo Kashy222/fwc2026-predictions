@@ -190,7 +190,6 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const CircularBracket = forwardRef((props, ref) => {
   const [hoveredNode, setHoveredNode] = useState(null);
   const [updateTick, setUpdateTick] = useState(0);
-  const skipAnimation = useRef(true);
 
   
   const setMatchWinner = (match, teamCode, isReal = false) => {
@@ -510,7 +509,7 @@ const CircularBracket = forwardRef((props, ref) => {
         if (!el) return;
         
         let old = oldPositions.current[tp.team];
-        if (!old || skipAnimation.current) {
+        if (!old) {
             el.style.left = `${tp.x}%`;
             el.style.top = `${tp.y}%`;
             oldPositions.current[tp.team] = { r: tp.r, idx: tp.idx, x: tp.x, y: tp.y };
@@ -737,9 +736,6 @@ const CircularBracket = forwardRef((props, ref) => {
         console.error("Error fetching match data:", err);
       } finally {
         if (props.onFetchStateChange) props.onFetchStateChange(false);
-        setTimeout(() => {
-            skipAnimation.current = false;
-        }, 100);
       }
     };
 
