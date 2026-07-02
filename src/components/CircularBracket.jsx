@@ -310,14 +310,7 @@ const CircularBracket = forwardRef((props, ref) => {
                isRealResult: false
            };
            
-           if (r === 1) {
-               const idx = i / 2;
-               const hardcoded = { 5: 'mx', 6: 'no', 7: 'br', 12: 'ma', 13: 'ca', 14: 'fr', 15: 'py' };
-               if (hardcoded[idx]) {
-                   match.winner = hardcoded[idx];
-                   match.isRealResult = true;
-               }
-           }
+
            
            prevRound[i].parent = match;
            prevRound[i + 1].parent = match;
