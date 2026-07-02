@@ -191,7 +191,6 @@ const CircularBracket = forwardRef((props, ref) => {
   const [hoveredNode, setHoveredNode] = useState(null);
   const [updateTick, setUpdateTick] = useState(0);
   const skipAnimation = useRef(true);
-  const [initialLoading, setInitialLoading] = useState(true);
 
   
   const setMatchWinner = (match, teamCode, isReal = false) => {
@@ -311,8 +310,15 @@ const CircularBracket = forwardRef((props, ref) => {
                isRealResult: false
            };
            
-
-           
+           if (r === 1) {
+               const idx = i / 2;
+               const hardcoded = { 4: 'gb-eng', 5: 'mx', 6: 'no', 7: 'br', 8: 'be', 9: 'us', 12: 'ma', 13: 'ca', 14: 'fr', 15: 'py' };
+               if (hardcoded[idx]) {
+                   match.winner = hardcoded[idx];
+                   match.isRealResult = true;
+               }
+           }
+            
            prevRound[i].parent = match;
            prevRound[i + 1].parent = match;
            currentRound.push(match);
@@ -731,7 +737,6 @@ const CircularBracket = forwardRef((props, ref) => {
         console.error("Error fetching match data:", err);
       } finally {
         if (props.onFetchStateChange) props.onFetchStateChange(false);
-        setInitialLoading(false);
         setTimeout(() => {
             skipAnimation.current = false;
         }, 100);
@@ -978,10 +983,7 @@ const CircularBracket = forwardRef((props, ref) => {
               position: 'absolute', 
               transform: 'translate(-50%, -50%)',
               zIndex: hoveredNode === tp.team ? 100 : (tp.isDefeated ? 10 : 20),
-              cursor: (tp.isClickable || tp.isRevertable || tp.isSwappable) ? 'pointer' : 'default',
-              opacity: initialLoading ? 0 : 1,
-              pointerEvents: initialLoading ? 'none' : 'auto',
-              transition: initialLoading ? 'none' : 'opacity 0.2s ease-in'
+              cursor: (tp.isClickable || tp.isRevertable || tp.isSwappable) ? 'pointer' : 'default'
             }}
             onMouseEnter={() => setHoveredNode(tp.team)}
             onMouseLeave={() => setHoveredNode(null)}
