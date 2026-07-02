@@ -735,7 +735,8 @@ const CircularBracket = forwardRef((props, ref) => {
       
       {props.isMobilePanzoomActive && showPanzoomHint && (
           <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, fontSize: '11px', color: 'rgba(255,255,255,0.9)', width: '300px', textAlign: 'center', pointerEvents: 'none', lineHeight: '1.5', textShadow: '0 2px 6px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9)' }}>
-              Pinch-To-Zoom &amp; Drag to move to desired piece in the bracket. Use minimap for guidance. Use <Shrink size={10} style={{ display: 'inline-block', verticalAlign: 'middle', margin: '0 2px' }} /> to reset zoom.
+              Two fingers to zoom &middot; Drag to pan<br />
+              Tap <Shrink size={10} style={{ display: 'inline-block', verticalAlign: 'middle', margin: '0 2px' }} /> to reset view
           </div>
       )}
       {props.isMobilePanzoomActive && (() => {
