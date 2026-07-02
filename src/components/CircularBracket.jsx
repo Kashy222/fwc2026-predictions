@@ -486,14 +486,43 @@ const CircularBracket = forwardRef((props, ref) => {
   }, [leaves, updateTick]); 
 
   useLayoutEffect(() => {
+    const animateStraight = (el, startX, startY, endX, endY) => {
+        let start = performance.now();
+        const duration = 800;
+        const animate = (now) => {
+            let progress = (now - start) / duration;
+            if (progress > 1) progress = 1;
+            const ease = progress < 0.5 
+                ? 4 * progress * progress * progress 
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            
+            el.style.left = `${startX + (endX - startX) * ease}%`;
+            el.style.top = `${startY + (endY - startY) * ease}%`;
+            if (progress < 1) requestAnimationFrame(animate);
+        };
+        requestAnimationFrame(animate);
+    };
+
     teamPositions.forEach(tp => {
         const el = teamRefs.current[tp.team];
         if (!el) return;
         
-        const old = oldPositions.current[tp.team];
+        let old = oldPositions.current[tp.team];
         if (!old) {
-            el.style.left = `${tp.x}%`;
-            el.style.top = `${tp.y}%`;
+            const leafIndex = leaves.findIndex(l => l.team === tp.team);
+            let pt0;
+            if (leafIndex !== -1) {
+                pt0 = getPoint(0, leafIndex, NODE_RADII[0]);
+            } else {
+                pt0 = { x: tp.x, y: tp.y };
+            }
+            old = { r: 0, idx: leafIndex, x: pt0.x, y: pt0.y };
+            el.style.left = `${old.x}%`;
+            el.style.top = `${old.y}%`;
+            oldPositions.current[tp.team] = old;
+        }
+
+        if (old.r === tp.r && old.x === tp.x && old.y === tp.y) {
             oldPositions.current[tp.team] = { r: tp.r, idx: tp.idx, x: tp.x, y: tp.y };
             return;
         }
@@ -524,13 +553,10 @@ const CircularBracket = forwardRef((props, ref) => {
                     };
                     requestAnimationFrame(animate);
                 } else {
-                    el.style.left = `${tp.x}%`;
-                    el.style.top = `${tp.y}%`;
+                    animateStraight(el, old.x, old.y, tp.x, tp.y);
                 }
             } else {
-                // If it skipped rounds (e.g., initial load data), just snap
-                el.style.left = `${tp.x}%`;
-                el.style.top = `${tp.y}%`;
+                animateStraight(el, old.x, old.y, tp.x, tp.y);
             }
         } else if (old.r > tp.r) {
             if (old.r - tp.r === 1) {
@@ -559,23 +585,18 @@ const CircularBracket = forwardRef((props, ref) => {
                     };
                     requestAnimationFrame(animate);
                 } else {
-                    el.style.left = `${tp.x}%`;
-                    el.style.top = `${tp.y}%`;
+                    animateStraight(el, old.x, old.y, tp.x, tp.y);
                 }
             } else {
-                // Skipped multiple rounds backwards (e.g. cascading clears)
-                el.style.left = `${tp.x}%`;
-                el.style.top = `${tp.y}%`;
+                animateStraight(el, old.x, old.y, tp.x, tp.y);
             }
         } else if (old.x !== tp.x || old.y !== tp.y) {
-            // Unrelated coordinate jump
-            el.style.left = `${tp.x}%`;
-            el.style.top = `${tp.y}%`;
+            animateStraight(el, old.x, old.y, tp.x, tp.y);
         }
         
         oldPositions.current[tp.team] = { r: tp.r, idx: tp.idx, x: tp.x, y: tp.y };
     });
-  }, [teamPositions]);
+  }, [teamPositions, leaves]);
 
   const handleTeamClick = (tp) => {
     if (props.readOnly) return;
